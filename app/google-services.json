@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "18482140061",
+    "project_id": "plant-parenthood-a65b1",
+    "storage_bucket": "plant-parenthood-a65b1.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:18482140061:android:344df918ca9babe621d574",
+        "android_client_info": {
+          "package_name": "com.example.plantparenthood"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC3PV3QghdUriYuqnxVIQAtPFm-BNepsyQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:18482140061:android:6cd55efaa18f974d21d574",
+        "android_client_info": {
+          "package_name": "rma.lv1"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC3PV3QghdUriYuqnxVIQAtPFm-BNepsyQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
