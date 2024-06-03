@@ -1,3 +1,4 @@
+import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Button
@@ -14,13 +15,14 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavController
+import com.example.plantparenthood.RegisterViewModel
 import com.example.plantparenthood.ui.theme.backgroundGreen
 import com.example.plantparenthood.ui.theme.buttonGreen
 
 
 @Composable
-fun RegisterScreen() {
-    val gmail = remember { mutableStateOf("") }
+fun RegisterScreen(context: Context, navController: NavController, registerViewModel: RegisterViewModel) {
+    val email = remember { mutableStateOf("") }
     val password = remember { mutableStateOf("") }
     val stayLoggedIn = remember { mutableStateOf(false) }
     Box(
@@ -34,7 +36,7 @@ fun RegisterScreen() {
                 .padding(16.dp)
         ) {
             Button(
-                onClick = { /* Handle return action */ },
+                onClick = { navController.navigate("welcome_screen") },
                 colors = ButtonDefaults.buttonColors(containerColor = buttonGreen),
                 modifier = Modifier
                     .padding(top = 16.dp, start = 16.dp)
@@ -55,7 +57,7 @@ fun RegisterScreen() {
             Spacer(modifier = Modifier.height(84.dp))
 
             Text(
-                text = "Gmail",
+                text = "Email",
                 fontSize = 32.sp,
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             )
@@ -63,10 +65,10 @@ fun RegisterScreen() {
             Spacer(modifier = Modifier.height(8.dp))
 
             OutlinedTextField(
-                value = gmail.value,
+                value = email.value,
 
-                onValueChange = { gmail.value = it },
-                label = { Text("Gmail") },
+                onValueChange = { email.value = it },
+                label = { Text("Email") },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 32.dp)
@@ -110,7 +112,7 @@ fun RegisterScreen() {
             Spacer(modifier = Modifier.height(52.dp))
 
             Button(
-                onClick = { /* Handle register action */ },
+                onClick = { registerViewModel.register(context, email.value, password.value, navController = navController) },
                 colors = ButtonDefaults.buttonColors(containerColor = buttonGreen),
                 modifier = Modifier
                     .fillMaxWidth()
@@ -123,9 +125,3 @@ fun RegisterScreen() {
     }
 }
 
-
-@Preview(showBackground = true)
-@Composable
-fun RegisterScreenPreview() {
-    RegisterScreen()
-}

@@ -11,11 +11,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.example.plantparenthood.ui.theme.backgroundGreen
 import com.example.plantparenthood.ui.theme.buttonGreen
 
 @Composable
-fun WelcomeScreen() {
+fun WelcomeScreen(navController: NavController) {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -24,7 +25,7 @@ fun WelcomeScreen() {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(32.dp)
+                .padding(vertical = 32.dp, horizontal = 48.dp)
         ) {
             Spacer(modifier = Modifier.height(174.dp))
             Text(
@@ -35,10 +36,10 @@ fun WelcomeScreen() {
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             )
 
-            Spacer(modifier = Modifier.height(254.dp))
+            Spacer(modifier = Modifier.height(272.dp))
 
             Button(
-                onClick = { /* Handle login action */ },
+                onClick = { navController.navigate("login_screen") },
                 colors = ButtonDefaults.buttonColors(containerColor = buttonGreen),
                 modifier = Modifier
                     .fillMaxWidth()
@@ -50,7 +51,7 @@ fun WelcomeScreen() {
             Spacer(modifier = Modifier.height(30.dp))
 
             Button(
-                onClick = { /* Handle register action */ },
+                onClick = { navController.navigate("register_screen") },
                 colors = ButtonDefaults.buttonColors(containerColor = buttonGreen),
                 modifier = Modifier
                     .fillMaxWidth()
@@ -60,10 +61,4 @@ fun WelcomeScreen() {
             }
         }
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun WelcomeScreenPreview() {
-    WelcomeScreen()
 }

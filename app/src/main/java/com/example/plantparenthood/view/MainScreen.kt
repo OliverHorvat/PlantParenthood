@@ -11,12 +11,13 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.example.plantparenthood.R
 import com.example.plantparenthood.ui.theme.backgroundGreen
 import com.example.plantparenthood.ui.theme.buttonGreen
 
 @Composable
-fun MainScreen() {
+fun MainScreen(navController: NavController) {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -72,10 +73,4 @@ fun MainScreen() {
             }
         }
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun MainScreenPreview() {
-    MainScreen()
 }
