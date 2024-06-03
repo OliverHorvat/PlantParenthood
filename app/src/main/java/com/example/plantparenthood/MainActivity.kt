@@ -7,6 +7,7 @@ import LoginScreen
 import MainScreen
 import PlantScreen
 import GardenScreen
+import GardenViewModel
 import RegisterScreen
 import WelcomeScreen
 import android.content.Context
@@ -60,6 +61,9 @@ class MainActivity : ComponentActivity() {
                 }
                 composable("garden_screen") {
                     GardenScreen(
+                        context = this@MainActivity,
+                        navController = navController,
+                        gardenViewModel = GardenViewModel()
                     )
                 }
                 composable("plant_screen") {

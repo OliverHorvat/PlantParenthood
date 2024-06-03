@@ -1,3 +1,4 @@
+import android.content.Context
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -8,6 +9,9 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -15,6 +19,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.example.plantparenthood.R
 import com.example.plantparenthood.ui.theme.backgroundGreen
 import com.example.plantparenthood.ui.theme.buttonGreen
@@ -22,12 +27,18 @@ import com.example.plantparenthood.ui.theme.buttonGreen
 data class ListItem(val name: String, val imageResId: Int)
 
 @Composable
-fun GardenScreen() {
-    val items = listOf(
-        ListItem("Saša", R.drawable.a),
-        ListItem("Tin", R.drawable.a),
-        ListItem("Kedžo", R.drawable.a)
-    )
+fun GardenScreen(context: Context, navController: NavController, gardenViewModel: GardenViewModel) {
+
+    val itemsState = remember { mutableStateOf<List<ListItem>>(emptyList()) }
+
+    LaunchedEffect(Unit) {
+        val flowers = gardenViewModel.getFlowers(context)
+        val items = flowers.map { flower ->
+            ListItem(name = flower.name, imageResId = R.drawable.a)
+        }
+        itemsState.value = items
+    }
+
 
     Column {
         Box(
@@ -37,7 +48,7 @@ fun GardenScreen() {
         ) {
             Column {
                 Button(
-                    onClick = { /* Handle return action */ },
+                    onClick = { navController.navigate("main_screen") },
                     colors = ButtonDefaults.buttonColors(containerColor = buttonGreen),
                     modifier = Modifier
                         .padding(top = 16.dp, start = 16.dp, bottom = 16.dp)
@@ -45,7 +56,7 @@ fun GardenScreen() {
                 ) {
                     Text("Return", fontSize = 16.sp)
                 }
-                RecyclerView(items)
+                RecyclerView(itemsState.value)
             }
         }
     }

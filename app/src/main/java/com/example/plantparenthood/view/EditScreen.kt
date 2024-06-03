@@ -20,7 +20,6 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.navigation.NavController
 import com.example.plantparenthood.Flower
-import com.example.plantparenthood.MainViewModel
 import com.example.plantparenthood.R
 import com.example.plantparenthood.ui.theme.backgroundGreen
 import com.example.plantparenthood.ui.theme.buttonGreen
