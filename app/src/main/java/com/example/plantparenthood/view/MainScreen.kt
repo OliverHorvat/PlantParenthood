@@ -1,3 +1,4 @@
+import android.content.Context
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -12,12 +13,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.plantparenthood.MainViewModel
 import com.example.plantparenthood.R
 import com.example.plantparenthood.ui.theme.backgroundGreen
 import com.example.plantparenthood.ui.theme.buttonGreen
 
 @Composable
-fun MainScreen(navController: NavController) {
+fun MainScreen(context: Context, navController: NavController, mainViewModel: MainViewModel) {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -39,7 +41,7 @@ fun MainScreen(navController: NavController) {
             Spacer(modifier = Modifier.height(40.dp))
 
             Button(
-                onClick = { /* Handle my garden action */ },
+                onClick = { navController.navigate("garden_screen")},
                 colors = ButtonDefaults.buttonColors(containerColor = buttonGreen),
                 modifier = Modifier
                     .fillMaxWidth()
@@ -51,7 +53,7 @@ fun MainScreen(navController: NavController) {
             Spacer(modifier = Modifier.height(4.dp))
 
             Button(
-                onClick = { /* Handle add plant action */ },
+                onClick = { navController.navigate("plant_screen") },
                 colors = ButtonDefaults.buttonColors(containerColor = buttonGreen),
                 modifier = Modifier
                     .fillMaxWidth()
@@ -63,7 +65,7 @@ fun MainScreen(navController: NavController) {
             Spacer(modifier = Modifier.height(4.dp))
 
             Button(
-                onClick = { /* Handle log out action */ },
+                onClick = { mainViewModel.logOut(context, navController = navController) },
                 colors = ButtonDefaults.buttonColors(containerColor = buttonGreen),
                 modifier = Modifier
                     .fillMaxWidth()

@@ -5,7 +5,7 @@ import EditScreen
 import LoginScreen
 import MainScreen
 import PlantScreen
-import RecyclerViewScreen
+import GardenScreen
 import RegisterScreen
 import WelcomeScreen
 import android.content.Context
@@ -38,7 +38,9 @@ class MainActivity : ComponentActivity() {
                 }
                 composable("main_screen") {
                     MainScreen(
-                        navController = navController
+                        context = this@MainActivity,
+                        navController = navController,
+                        mainViewModel = MainViewModel()
                         )
                 }
                 composable("register_screen") {
@@ -53,6 +55,22 @@ class MainActivity : ComponentActivity() {
                         context = this@MainActivity,
                         navController = navController,
                         loginViewModel = LoginViewModel()
+                    )
+                }
+                composable("garden_screen") {
+                    GardenScreen(
+                    )
+                }
+                composable("plant_screen") {
+                    PlantScreen(
+                    )
+                }
+                composable("details_screen") {
+                    DetailsScreen(
+                    )
+                }
+                composable("edit_screen") {
+                    EditScreen(
                     )
                 }
             }
