@@ -46,6 +46,7 @@ fun MainScreen(context: Context, navController: NavController, mainViewModel: Ma
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(48.dp)
+                    .padding(horizontal = 32.dp)
             ) {
                 Text("My Garden", fontSize = 16.sp)
             }
@@ -53,11 +54,12 @@ fun MainScreen(context: Context, navController: NavController, mainViewModel: Ma
             Spacer(modifier = Modifier.height(4.dp))
 
             Button(
-                onClick = { navController.navigate("plant_screen") },
+                onClick = { navController.navigate("edit_screen") },
                 colors = ButtonDefaults.buttonColors(containerColor = buttonGreen),
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(48.dp)
+                    .padding(horizontal = 32.dp)
             ) {
                 Text("Add Plant", fontSize = 16.sp)
             }
@@ -70,6 +72,7 @@ fun MainScreen(context: Context, navController: NavController, mainViewModel: Ma
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(48.dp)
+                    .padding(horizontal = 32.dp)
             ) {
                 Text("Log Out", fontSize = 16.sp)
             }

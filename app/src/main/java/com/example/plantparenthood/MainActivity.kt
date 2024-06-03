@@ -2,6 +2,7 @@ package com.example.plantparenthood
 
 import DetailsScreen
 import EditScreen
+import EditViewModel
 import LoginScreen
 import MainScreen
 import PlantScreen
@@ -70,7 +71,11 @@ class MainActivity : ComponentActivity() {
                     )
                 }
                 composable("edit_screen") {
+
                     EditScreen(
+                        context = this@MainActivity,
+                        navController = navController,
+                        editViewModel = EditViewModel()
                     )
                 }
             }
