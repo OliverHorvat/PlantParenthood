@@ -15,16 +15,21 @@ import LoginViewModel
 import MainViewModel
 import RegisterViewModel
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.*
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.plantparenthood.ui.theme.PlantParenthoodTheme
 import com.example.plantparenthood.utils.AuthHelper
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
+    private var isBackPressedOnce = false
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -74,6 +79,19 @@ class MainActivity : ComponentActivity() {
                         EditScreen(context = this@MainActivity, navController = navController, editViewModel = EditViewModel())
                     }
                 }
+            }
+        }
+    }
+    override fun onBackPressed() {
+        if (isBackPressedOnce) {
+            moveTaskToBack(true)
+        } else {
+            isBackPressedOnce = true
+            Toast.makeText(this, "Press back again to exit", Toast.LENGTH_SHORT).show()
+
+            lifecycleScope.launch {
+                delay(2000)
+                isBackPressedOnce = false
             }
         }
     }
