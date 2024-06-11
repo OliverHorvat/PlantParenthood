@@ -13,10 +13,10 @@ class EditViewModel : ViewModel() {
     fun addFlower(context: Context, flower: Flower) {
         collectionRef.add(flower)
             .addOnSuccessListener { documentReference ->
-                Toast.makeText(context, flower.name+" has been added to your garden.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, flower.name+" has been added to your garden", Toast.LENGTH_SHORT).show()
             }
             .addOnFailureListener { e ->
-                Toast.makeText(context, "Failed to add flower to your garden.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "Failed to add flower to your garden", Toast.LENGTH_SHORT).show()
             }
     }
 }

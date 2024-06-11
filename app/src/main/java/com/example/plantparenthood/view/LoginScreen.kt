@@ -1,30 +1,33 @@
 import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavController
-import com.example.plantparenthood.LoginViewModel
 import com.example.plantparenthood.ui.theme.backgroundGreen
 import com.example.plantparenthood.ui.theme.buttonGreen
-
+import com.example.plantparenthood.utils.AuthHelper
 
 @Composable
 fun LoginScreen(context: Context, navController: NavController, loginViewModel: LoginViewModel) {
     val email = remember { mutableStateOf("") }
     val password = remember { mutableStateOf("") }
-    val stayLoggedIn = remember { mutableStateOf(false) }
+    val stayLoggedIn = remember { mutableStateOf(AuthHelper.isRememberMeChecked(context)) }
+
+    LaunchedEffect(Unit) {
+        if (stayLoggedIn.value) {
+            val credentials = AuthHelper.loadCredentials(context)
+            email.value = credentials.first
+            password.value = credentials.second
+        }
+    }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -66,7 +69,6 @@ fun LoginScreen(context: Context, navController: NavController, loginViewModel: 
 
             OutlinedTextField(
                 value = email.value,
-
                 onValueChange = { email.value = it },
                 label = { Text("Email") },
                 modifier = Modifier
@@ -112,7 +114,7 @@ fun LoginScreen(context: Context, navController: NavController, loginViewModel: 
             Spacer(modifier = Modifier.height(52.dp))
 
             Button(
-                onClick = { loginViewModel.signIn(context, email.value, password.value, navController = navController) },
+                onClick = { loginViewModel.signIn(context, email.value, password.value, stayLoggedIn.value, navController) },
                 colors = ButtonDefaults.buttonColors(containerColor = buttonGreen),
                 modifier = Modifier
                     .fillMaxWidth()

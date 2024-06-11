@@ -10,21 +10,19 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavController
-import com.example.plantparenthood.RegisterViewModel
 import com.example.plantparenthood.ui.theme.backgroundGreen
 import com.example.plantparenthood.ui.theme.buttonGreen
-
+import com.example.plantparenthood.utils.AuthHelper
 
 @Composable
 fun RegisterScreen(context: Context, navController: NavController, registerViewModel: RegisterViewModel) {
     val email = remember { mutableStateOf("") }
     val password = remember { mutableStateOf("") }
-    val stayLoggedIn = remember { mutableStateOf(false) }
+    val stayLoggedIn = remember { mutableStateOf(AuthHelper.isRememberMeChecked(context)) }
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -112,7 +110,7 @@ fun RegisterScreen(context: Context, navController: NavController, registerViewM
             Spacer(modifier = Modifier.height(52.dp))
 
             Button(
-                onClick = { registerViewModel.register(context, email.value, password.value, navController = navController) },
+                onClick = { registerViewModel.register(context, email.value, password.value, stayLoggedIn.value, navController) },
                 colors = ButtonDefaults.buttonColors(containerColor = buttonGreen),
                 modifier = Modifier
                     .fillMaxWidth()

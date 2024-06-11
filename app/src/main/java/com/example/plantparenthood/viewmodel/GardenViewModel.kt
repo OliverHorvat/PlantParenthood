@@ -38,7 +38,7 @@ class GardenViewModel : ViewModel() {
             flowers.value = newFlowers
             return newFlowers
         } catch (e: Exception) {
-            Toast.makeText(context, "Failed to add flower to your garden.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "Failed to add flower to your garden", Toast.LENGTH_SHORT).show()
             return emptyList()
         }
     }

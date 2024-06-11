@@ -12,7 +12,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -25,12 +24,14 @@ import com.example.plantparenthood.ui.theme.backgroundGreen
 import com.example.plantparenthood.ui.theme.buttonGreen
 import com.google.firebase.Timestamp
 import java.util.Calendar
+import java.util.TimeZone
+import android.widget.Toast
 
 
 @Composable
 fun EditScreen(context: Context, navController: NavController, editViewModel: EditViewModel) {
     val name = remember { mutableStateOf("") }
-    val image: String = ""
+    val image = ""
     val type = "orhideja"
     var year by remember { mutableStateOf("") }
     var month by remember { mutableStateOf("") }
@@ -183,17 +184,30 @@ fun EditScreen(context: Context, navController: NavController, editViewModel: Ed
 
             Button(
                 onClick = {
-                    val calendar = Calendar.getInstance()
-                    calendar.set(year.toInt(), month.toInt() - 1, day.toInt(), hour.toInt(), minute.toInt(), 0)
-                    val floweringTime = Timestamp(calendar.time)
-
-                    val newFlower = Flower(
-                        name = name.value,
-                        image = image,
-                        floweringTime = floweringTime,
-                        type = type
-                    )
-                    editViewModel.addFlower(context, newFlower)
+                    if (name.value == "") {
+                        Toast.makeText(context, "Please input name", Toast.LENGTH_SHORT).show()
+                    }
+                    else if (type == ""){
+                        Toast.makeText(context, "Please select type", Toast.LENGTH_SHORT).show()
+                    }
+                    else if (year == "" || month == "" || day == "" || hour == "" || minute == ""){
+                        Toast.makeText(context, "Please fill in all fields", Toast.LENGTH_SHORT).show()
+                    }
+                    else if (year.toInt() > 0 && month.toInt() > 0 && day.toInt() > 0 && hour.toInt() > -1 && minute.toInt() > -1) {
+                        val calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
+                        calendar.set(year.toInt(), month.toInt() - 1, day.toInt() + 2, hour.toInt(), minute.toInt(), 0)
+                        val floweringTime = Timestamp(calendar.time)
+                        val newFlower = Flower(
+                            name = name.value,
+                            image = image,
+                            floweringTime = floweringTime,
+                            type = type
+                        )
+                        editViewModel.addFlower(context, newFlower)
+                    }
+                    else{
+                        Toast.makeText(context, "Please input valid date", Toast.LENGTH_SHORT).show()
+                    }
                 },
                 colors = ButtonDefaults.buttonColors(containerColor = buttonGreen),
                 modifier = Modifier
