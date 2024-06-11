@@ -193,7 +193,7 @@ fun EditScreen(context: Context, navController: NavController, editViewModel: Ed
                     else if (year == "" || month == "" || day == "" || hour == "" || minute == ""){
                         Toast.makeText(context, "Please fill in all fields", Toast.LENGTH_SHORT).show()
                     }
-                    else if (year.toInt() > 0 && month.toInt() > 0 && day.toInt() > 0 && hour.toInt() > -1 && minute.toInt() > -1) {
+                    else if (year.toInt() > 1 && month.toInt() > 0 && day.toInt() > 0 && hour.toInt() > -1 && minute.toInt() > -1) {
                         val calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
                         calendar.set(year.toInt(), month.toInt() - 1, day.toInt(), hour.toInt(), minute.toInt(), 0)
                         val floweringTime = Timestamp(calendar.time)
