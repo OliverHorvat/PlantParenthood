@@ -195,7 +195,7 @@ fun EditScreen(context: Context, navController: NavController, editViewModel: Ed
                     }
                     else if (year.toInt() > 0 && month.toInt() > 0 && day.toInt() > 0 && hour.toInt() > -1 && minute.toInt() > -1) {
                         val calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
-                        calendar.set(year.toInt(), month.toInt() - 1, day.toInt() + 2, hour.toInt(), minute.toInt(), 0)
+                        calendar.set(year.toInt(), month.toInt() - 1, day.toInt(), hour.toInt(), minute.toInt(), 0)
                         val floweringTime = Timestamp(calendar.time)
                         val newFlower = Flower(
                             name = name.value,
