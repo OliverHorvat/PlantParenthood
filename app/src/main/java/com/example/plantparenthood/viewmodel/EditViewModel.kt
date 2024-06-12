@@ -1,9 +1,11 @@
 import android.content.Context
+import android.net.Uri
 import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import com.example.plantparenthood.Flower
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import java.io.File
 
 class EditViewModel : ViewModel() {
     private val db = FirebaseFirestore.getInstance()

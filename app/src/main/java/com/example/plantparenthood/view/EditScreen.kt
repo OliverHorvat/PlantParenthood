@@ -1,4 +1,7 @@
+import EditViewModel
 import android.content.Context
+import android.content.pm.PackageManager
+import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -30,7 +33,12 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
-
+import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
+import android.Manifest
+import java.io.File
+import java.util.Objects
+import coil.compose.rememberImagePainter
 @Composable
 fun EditScreen(context: Context, navController: NavController, editViewModel: EditViewModel) {
     val name = remember { mutableStateOf("") }
@@ -42,10 +50,37 @@ fun EditScreen(context: Context, navController: NavController, editViewModel: Ed
     var hour by remember { mutableStateOf("") }
     var minute by remember { mutableStateOf("") }
 
-    val capturedImage = remember { mutableStateOf<ImageBitmap?>(null) }
+    val file = File.createTempFile(
+        "flower",
+        ".jpg",
+        context.externalCacheDir
+    )
+    val uri = FileProvider.getUriForFile(
+        Objects.requireNonNull(context),
+        context.packageName + ".provider", file
+    )
 
-    val takePictureLauncher = rememberLauncherForActivityResult(ActivityResultContracts.TakePicturePreview()) { bitmap ->
-        capturedImage.value = bitmap?.asImageBitmap()
+    var capturedImageUri by remember {
+        mutableStateOf<Uri>(Uri.EMPTY)
+    }
+
+    val cameraLauncher =
+        rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()){
+            capturedImageUri = uri
+        }
+
+    val permissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ){
+        if (it)
+        {
+            Toast.makeText(context, "Permission Granted", Toast.LENGTH_SHORT).show()
+            cameraLauncher.launch(uri)
+        }
+        else
+        {
+            Toast.makeText(context, "Permission Denied", Toast.LENGTH_SHORT).show()
+        }
     }
 
     Box(
@@ -69,27 +104,26 @@ fun EditScreen(context: Context, navController: NavController, editViewModel: Ed
             }
 
             Spacer(modifier = Modifier.height(24.dp))
-
-            if (capturedImage.value != null){
-                capturedImage.value?.let { bitmap ->
-                    Image(
-                        bitmap = bitmap,
-                        contentDescription = "Captured Image",
-                        modifier = Modifier
-                            .size(220.dp)
-                            .align(Alignment.CenterHorizontally))
-                }
+            if (capturedImageUri.path?.isNotEmpty() == true)
+            {
+                Image(
+                    painter = rememberImagePainter(capturedImageUri),
+                    contentDescription = "Captured Image",
+                    modifier = Modifier
+                        .size(220.dp)
+                        .align(Alignment.CenterHorizontally)
+                )
             }
-            else{
+            else
+            {
                 Image(
                     painter = painterResource(id = R.drawable.a),
                     contentDescription = "Logo",
                     modifier = Modifier
                         .size(220.dp)
-                        .align(Alignment.CenterHorizontally),
+                        .align(Alignment.CenterHorizontally)
                 )
             }
-
 
             Spacer(modifier = Modifier.height(40.dp))
 
@@ -104,7 +138,6 @@ fun EditScreen(context: Context, navController: NavController, editViewModel: Ed
             )
 
             Spacer(modifier = Modifier.height(20.dp))
-
 
             Text(
                 text = "Last Watering Time:",
@@ -179,7 +212,19 @@ fun EditScreen(context: Context, navController: NavController, editViewModel: Ed
             Spacer(modifier = Modifier.height(24.dp))
 
             Button(
-                onClick = { takePictureLauncher.launch(null) },
+                onClick = {
+                    val permissionCheckResult =
+                        ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA)
+
+                    if (permissionCheckResult == PackageManager.PERMISSION_GRANTED)
+                    {
+                        cameraLauncher.launch(uri)
+                    }
+                    else
+                    {
+                        permissionLauncher.launch(Manifest.permission.CAMERA)
+                    }
+                },
                 colors = ButtonDefaults.buttonColors(containerColor = buttonGreen),
                 modifier = Modifier
                     .fillMaxWidth()
