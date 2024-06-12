@@ -26,7 +26,10 @@ import com.google.firebase.Timestamp
 import java.util.Calendar
 import java.util.TimeZone
 import android.widget.Toast
-
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.asImageBitmap
 
 @Composable
 fun EditScreen(context: Context, navController: NavController, editViewModel: EditViewModel) {
@@ -38,6 +41,12 @@ fun EditScreen(context: Context, navController: NavController, editViewModel: Ed
     var day by remember { mutableStateOf("") }
     var hour by remember { mutableStateOf("") }
     var minute by remember { mutableStateOf("") }
+
+    val capturedImage = remember { mutableStateOf<ImageBitmap?>(null) }
+
+    val takePictureLauncher = rememberLauncherForActivityResult(ActivityResultContracts.TakePicturePreview()) { bitmap ->
+        capturedImage.value = bitmap?.asImageBitmap()
+    }
 
     Box(
         modifier = Modifier
@@ -61,13 +70,26 @@ fun EditScreen(context: Context, navController: NavController, editViewModel: Ed
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            Image(
-                painter = painterResource(id = R.drawable.a),
-                contentDescription = "Logo",
-                modifier = Modifier
-                    .size(220.dp)
-                    .align(Alignment.CenterHorizontally)
-            )
+            if (capturedImage.value != null){
+                capturedImage.value?.let { bitmap ->
+                    Image(
+                        bitmap = bitmap,
+                        contentDescription = "Captured Image",
+                        modifier = Modifier
+                            .size(220.dp)
+                            .align(Alignment.CenterHorizontally))
+                }
+            }
+            else{
+                Image(
+                    painter = painterResource(id = R.drawable.a),
+                    contentDescription = "Logo",
+                    modifier = Modifier
+                        .size(220.dp)
+                        .align(Alignment.CenterHorizontally),
+                )
+            }
+
 
             Spacer(modifier = Modifier.height(40.dp))
 
@@ -157,7 +179,7 @@ fun EditScreen(context: Context, navController: NavController, editViewModel: Ed
             Spacer(modifier = Modifier.height(24.dp))
 
             Button(
-                onClick = { /* Handle insert image action */ },
+                onClick = { takePictureLauncher.launch(null) },
                 colors = ButtonDefaults.buttonColors(containerColor = buttonGreen),
                 modifier = Modifier
                     .fillMaxWidth()
