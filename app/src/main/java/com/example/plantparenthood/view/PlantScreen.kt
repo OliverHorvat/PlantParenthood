@@ -39,7 +39,7 @@ fun PlantScreen(context: Context, flower: Flower, navController: NavController) 
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Button(
-                    onClick = { navController.navigate("garden_screen") },
+                    onClick = { navController.navigateUp() },
                     colors = ButtonDefaults.buttonColors(containerColor = buttonGreen),
                     modifier = Modifier
                         .padding(top = 16.dp, start = 16.dp)
