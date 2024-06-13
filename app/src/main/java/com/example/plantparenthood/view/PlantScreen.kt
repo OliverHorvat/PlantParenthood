@@ -1,3 +1,4 @@
+import android.content.Context
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -8,19 +9,20 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.navigation.NavController
+import coil.compose.rememberImagePainter
+import com.example.plantparenthood.Flower
 import com.example.plantparenthood.R
 import com.example.plantparenthood.ui.theme.backgroundGreen
 import com.example.plantparenthood.ui.theme.buttonGreen
 
 
 @Composable
-fun PlantScreen() {
+fun PlantScreen(context: Context, flower: Flower, navController: NavController) {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -37,7 +39,7 @@ fun PlantScreen() {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Button(
-                    onClick = { /* Handle return action */ },
+                    onClick = { navController.navigate("garden_screen") },
                     colors = ButtonDefaults.buttonColors(containerColor = buttonGreen),
                     modifier = Modifier
                         .padding(top = 16.dp, start = 16.dp)
@@ -58,7 +60,7 @@ fun PlantScreen() {
             Spacer(modifier = Modifier.height(16.dp))
 
             Text(
-                text = "Type: Plant Name",
+                text = "${flower.type} ${flower.name}",
                 color = Color.Black,
                 fontSize = 44.sp,
                 modifier = Modifier.align(Alignment.CenterHorizontally)
@@ -66,8 +68,14 @@ fun PlantScreen() {
 
             Spacer(modifier = Modifier.height(16.dp))
 
+            val painter = if (flower.image != "") {
+                rememberImagePainter(data = flower.image)
+            } else {
+                painterResource(id = R.drawable.a)
+            }
+
             Image(
-                painter = painterResource(id = R.drawable.a),
+                painter = painter,
                 contentDescription = "Plant",
                 modifier = Modifier
                     .size(260.dp)
@@ -94,7 +102,7 @@ fun PlantScreen() {
                     .padding(horizontal = 32.dp)
                     .height(48.dp)
             ) {
-                Text("Water (Plant Name)", fontSize = 16.sp)
+                Text("Water Me", fontSize = 16.sp)
             }
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -107,7 +115,7 @@ fun PlantScreen() {
                     .padding(horizontal = 32.dp)
                     .height(48.dp)
             ) {
-                Text("Edit (Plant Name)", fontSize = 16.sp)
+                Text("Edit Me", fontSize = 16.sp)
             }
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -120,14 +128,8 @@ fun PlantScreen() {
                     .padding(horizontal = 32.dp)
                     .height(48.dp)
             ) {
-                Text("(Type) Details", fontSize = 16.sp)
+                Text("Type Details", fontSize = 16.sp)
             }
         }
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun PlantScreenPreview() {
-    PlantScreen()
 }

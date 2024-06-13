@@ -20,6 +20,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.*
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -37,7 +38,7 @@ class MainActivity : ComponentActivity() {
             PlantParenthoodTheme {
                 val navController = rememberNavController()
                 var startDestination by remember { mutableStateOf("loading_screen") }
-
+                var gardenViewModel: GardenViewModel = viewModel()
                 LaunchedEffect(Unit) {
                     val (savedEmail, savedPassword) = AuthHelper.loadCredentials(this@MainActivity)
                     val isRememberMeChecked = AuthHelper.isRememberMeChecked(this@MainActivity)
@@ -49,7 +50,6 @@ class MainActivity : ComponentActivity() {
                         startDestination = "welcome_screen"
                     }
                 }
-
                 NavHost(navController = navController, startDestination = startDestination) {
                     composable("loading_screen") {
                         LoadingScreen(navController = navController)
@@ -67,10 +67,11 @@ class MainActivity : ComponentActivity() {
                         LoginScreen(context = this@MainActivity, navController = navController, loginViewModel = LoginViewModel())
                     }
                     composable("garden_screen") {
-                        GardenScreen(context = this@MainActivity, navController = navController, gardenViewModel = GardenViewModel())
+                        gardenViewModel = viewModel()
+                        GardenScreen(context = this@MainActivity, navController = navController, gardenViewModel = gardenViewModel)
                     }
                     composable("plant_screen") {
-                        PlantScreen()
+                        PlantScreen(context = this@MainActivity, flower = gardenViewModel.screenFlower, navController = navController)
                     }
                     composable("details_screen") {
                         DetailsScreen()

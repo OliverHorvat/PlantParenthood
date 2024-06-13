@@ -2,6 +2,7 @@ import android.content.Context
 import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.compose.runtime.mutableStateOf
+import androidx.navigation.NavController
 import com.example.plantparenthood.Flower
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
@@ -12,13 +13,12 @@ import kotlinx.coroutines.withContext
 
 class GardenViewModel : ViewModel() {
     private val db = FirebaseFirestore.getInstance()
-    private val currentUser = FirebaseAuth.getInstance().currentUser!!.uid
-    private val collectionRef = db.collection(currentUser)
-
-    private val flowers = mutableStateOf<List<Flower>>(emptyList())
-
+    private var flowers = mutableStateOf<List<Flower>>(emptyList())
+    var screenFlower = Flower()
     suspend fun getFlowers(context: Context): List<Flower> = withContext(Dispatchers.IO) {
         try {
+            val currentUser = FirebaseAuth.getInstance().currentUser!!.uid
+            val collectionRef = db.collection(currentUser)
             val querySnapshot = collectionRef.get().await()
             val newFlowers = mutableListOf<Flower>()
             for (document in querySnapshot.documents) {
@@ -45,5 +45,10 @@ class GardenViewModel : ViewModel() {
             }
             emptyList()
         }
+    }
+
+    fun goToFlower(flower: Flower, navController: NavController){
+        screenFlower = flower
+        navController.navigate("plant_screen")
     }
 }

@@ -36,20 +36,31 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import android.Manifest
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AlertDialog
 import java.io.File
 import java.util.Objects
 import coil.compose.rememberImagePainter
 @Composable
 fun EditScreen(context: Context, navController: NavController, editViewModel: EditViewModel) {
     val name = remember { mutableStateOf("") }
-    val image = ""
-    val type = "orhideja"
+    var type by remember { mutableStateOf("") }
     var year by remember { mutableStateOf("") }
     var month by remember { mutableStateOf("") }
     var day by remember { mutableStateOf("") }
     var hour by remember { mutableStateOf("") }
     var minute by remember { mutableStateOf("") }
+    var showDialog by remember { mutableStateOf(false) }
+    var plantTypes by remember { mutableStateOf<List<String>>(emptyList()) }
 
+    LaunchedEffect(showDialog) {
+        if (showDialog) {
+            plantTypes = editViewModel.getPlantTypes()
+        }
+    }
     val file = File.createTempFile(
         "flower",
         ".jpg",
@@ -60,25 +71,25 @@ fun EditScreen(context: Context, navController: NavController, editViewModel: Ed
         context.packageName + ".provider", file
     )
 
-    var capturedImageUri by remember {
-        mutableStateOf<Uri>(Uri.EMPTY)
-    }
+    var imageCaptured by remember { mutableStateOf(false) }
+    var capturedImageUri by remember { mutableStateOf<Uri>(Uri.EMPTY) }
 
     val cameraLauncher =
-        rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()){
-            capturedImageUri = uri
+        rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) { success ->
+            if (success) {
+                capturedImageUri = uri
+                imageCaptured = true
+            }
         }
+
 
     val permissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
-    ){
-        if (it)
-        {
+    ) {
+        if (it) {
             Toast.makeText(context, "Permission Granted", Toast.LENGTH_SHORT).show()
             cameraLauncher.launch(uri)
-        }
-        else
-        {
+        } else {
             Toast.makeText(context, "Permission Denied", Toast.LENGTH_SHORT).show()
         }
     }
@@ -104,8 +115,8 @@ fun EditScreen(context: Context, navController: NavController, editViewModel: Ed
             }
 
             Spacer(modifier = Modifier.height(24.dp))
-            if (capturedImageUri.path?.isNotEmpty() == true)
-            {
+
+            if (imageCaptured) {
                 Image(
                     painter = rememberImagePainter(capturedImageUri),
                     contentDescription = "Captured Image",
@@ -113,9 +124,7 @@ fun EditScreen(context: Context, navController: NavController, editViewModel: Ed
                         .size(220.dp)
                         .align(Alignment.CenterHorizontally)
                 )
-            }
-            else
-            {
+            } else {
                 Image(
                     painter = painterResource(id = R.drawable.a),
                     contentDescription = "Logo",
@@ -216,12 +225,9 @@ fun EditScreen(context: Context, navController: NavController, editViewModel: Ed
                     val permissionCheckResult =
                         ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA)
 
-                    if (permissionCheckResult == PackageManager.PERMISSION_GRANTED)
-                    {
+                    if (permissionCheckResult == PackageManager.PERMISSION_GRANTED) {
                         cameraLauncher.launch(uri)
-                    }
-                    else
-                    {
+                    } else {
                         permissionLauncher.launch(Manifest.permission.CAMERA)
                     }
                 },
@@ -231,13 +237,13 @@ fun EditScreen(context: Context, navController: NavController, editViewModel: Ed
                     .padding(horizontal = 32.dp)
                     .height(48.dp)
             ) {
-                Text("Insert Image", fontSize = 16.sp)
+                Text("Take a Picture", fontSize = 16.sp)
             }
 
             Spacer(modifier = Modifier.height(16.dp))
 
             Button(
-                onClick = { /* Handle select plant type action */ },
+                onClick = { showDialog = true },
                 colors = ButtonDefaults.buttonColors(containerColor = buttonGreen),
                 modifier = Modifier
                     .fillMaxWidth()
@@ -253,16 +259,22 @@ fun EditScreen(context: Context, navController: NavController, editViewModel: Ed
                 onClick = {
                     if (name.value == "") {
                         Toast.makeText(context, "Please input name", Toast.LENGTH_SHORT).show()
-                    }
-                    else if (type == ""){
+                    } else if (type == "") {
                         Toast.makeText(context, "Please select type", Toast.LENGTH_SHORT).show()
-                    }
-                    else if (year == "" || month == "" || day == "" || hour == "" || minute == ""){
-                        Toast.makeText(context, "Please fill in all fields", Toast.LENGTH_SHORT).show()
-                    }
-                    else if (year.toInt() > 1 && month.toInt() > 0 && day.toInt() > 0 && hour.toInt() > -1 && minute.toInt() > -1) {
+                    } else if (year == "" || month == "" || day == "" || hour == "" || minute == "") {
+                        Toast.makeText(context, "Please fill in all fields", Toast.LENGTH_SHORT)
+                            .show()
+                    } else if (year.toInt() > 1 && month.toInt() > 0 && day.toInt() > 0 && hour.toInt() > -1 && minute.toInt() > -1) {
+                        Toast.makeText(context, "Saving in progress, please wait", Toast.LENGTH_SHORT).show()
                         val calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
-                        calendar.set(year.toInt(), month.toInt() - 1, day.toInt(), hour.toInt(), minute.toInt(), 0)
+                        calendar.set(
+                            year.toInt(),
+                            month.toInt() - 1,
+                            day.toInt(),
+                            hour.toInt(),
+                            minute.toInt(),
+                            0
+                        )
                         val floweringTime = Timestamp(calendar.time)
                         editViewModel.uploadImageToFirebase(capturedImageUri, { downloadUrl ->
                             val newFlower = Flower(
@@ -272,11 +284,16 @@ fun EditScreen(context: Context, navController: NavController, editViewModel: Ed
                                 type = type
                             )
                             editViewModel.addFlower(context, newFlower)
-                        }, { exception ->
-                            Toast.makeText(context, "Image upload failed.", Toast.LENGTH_SHORT).show()
+                        }, { filler ->
+                            val newFlower = Flower(
+                                name = name.value,
+                                image = filler,
+                                floweringTime = floweringTime,
+                                type = type
+                            )
+                            editViewModel.addFlower(context, newFlower)
                         })
-                    }
-                    else{
+                    } else {
                         Toast.makeText(context, "Please input valid date", Toast.LENGTH_SHORT).show()
                     }
                 },
@@ -288,6 +305,46 @@ fun EditScreen(context: Context, navController: NavController, editViewModel: Ed
             ) {
                 Text("Save", fontSize = 16.sp)
             }
+        }
+        if (showDialog) {
+            AlertDialog(
+                onDismissRequest = { showDialog = false },
+                title = { Text(text = "Select Plant Type") },
+                text = {
+                    LazyColumn {
+                        items(plantTypes) { plantType ->
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(8.dp)
+                                    .clickable {
+                                        type = plantType
+                                        showDialog = false
+                                    }
+                                    .background(
+                                        color = buttonGreen,
+                                        shape = RoundedCornerShape(16.dp)
+                                    )
+                                    .padding(16.dp)
+                            ) {
+                                Text(
+                                    text = plantType,
+                                    color = Color.White,
+                                    modifier = Modifier.fillMaxWidth()
+                                )
+                            }
+                        }
+                    }
+                },
+                confirmButton = {
+                    Button(
+                        onClick = { showDialog = false },
+                        colors = ButtonDefaults.buttonColors(containerColor = buttonGreen)
+                    ) {
+                        Text("Close")
+                    }
+                }
+            )
         }
     }
 }
