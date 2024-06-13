@@ -7,6 +7,8 @@ import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 class GardenViewModel : ViewModel() {
     private val db = FirebaseFirestore.getInstance()
@@ -15,7 +17,7 @@ class GardenViewModel : ViewModel() {
 
     private val flowers = mutableStateOf<List<Flower>>(emptyList())
 
-    suspend fun getFlowers(context: Context): List<Flower> {
+    suspend fun getFlowers(context: Context): List<Flower> = withContext(Dispatchers.IO) {
         try {
             val querySnapshot = collectionRef.get().await()
             val newFlowers = mutableListOf<Flower>()
@@ -36,10 +38,12 @@ class GardenViewModel : ViewModel() {
                 }
             }
             flowers.value = newFlowers
-            return newFlowers
+            newFlowers
         } catch (e: Exception) {
-            Toast.makeText(context, "Failed to add flower to your garden", Toast.LENGTH_SHORT).show()
-            return emptyList()
+            withContext(Dispatchers.Main) {
+                Toast.makeText(context, "Failed to add flower to your garden", Toast.LENGTH_SHORT).show()
+            }
+            emptyList()
         }
     }
 }

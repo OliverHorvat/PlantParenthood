@@ -264,13 +264,17 @@ fun EditScreen(context: Context, navController: NavController, editViewModel: Ed
                         val calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
                         calendar.set(year.toInt(), month.toInt() - 1, day.toInt(), hour.toInt(), minute.toInt(), 0)
                         val floweringTime = Timestamp(calendar.time)
-                        val newFlower = Flower(
-                            name = name.value,
-                            image = image,
-                            floweringTime = floweringTime,
-                            type = type
-                        )
-                        editViewModel.addFlower(context, newFlower)
+                        editViewModel.uploadImageToFirebase(capturedImageUri, { downloadUrl ->
+                            val newFlower = Flower(
+                                name = name.value,
+                                image = downloadUrl,
+                                floweringTime = floweringTime,
+                                type = type
+                            )
+                            editViewModel.addFlower(context, newFlower)
+                        }, { exception ->
+                            Toast.makeText(context, "Image upload failed.", Toast.LENGTH_SHORT).show()
+                        })
                     }
                     else{
                         Toast.makeText(context, "Please input valid date", Toast.LENGTH_SHORT).show()

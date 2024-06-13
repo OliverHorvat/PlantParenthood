@@ -15,29 +15,26 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.plantparenthood.R
+import coil.compose.rememberImagePainter
 import com.example.plantparenthood.ui.theme.backgroundGreen
 import com.example.plantparenthood.ui.theme.buttonGreen
 
-data class ListItem(val name: String, val imageResId: Int)
+data class ListItem(val name: String, val imageUrl: String)
 
 @Composable
 fun GardenScreen(context: Context, navController: NavController, gardenViewModel: GardenViewModel) {
-
     val itemsState = remember { mutableStateOf<List<ListItem>>(emptyList()) }
 
     LaunchedEffect(Unit) {
         val flowers = gardenViewModel.getFlowers(context)
         val items = flowers.map { flower ->
-            ListItem(name = flower.name, imageResId = R.drawable.a)
+            ListItem(name = flower.name, imageUrl = flower.image)
         }
         itemsState.value = items
     }
-
 
     Column {
         Box(
@@ -86,7 +83,7 @@ fun ListItemView(item: ListItem) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Image(
-                painter = painterResource(id = item.imageResId),
+                painter = rememberImagePainter(data = item.imageUrl),
                 contentDescription = null,
                 modifier = Modifier.size(72.dp)
             )
