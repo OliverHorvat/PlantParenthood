@@ -25,8 +25,8 @@ class RegisterViewModel : ViewModel() {
                                             val userData = hashMapOf(
                                                 "email" to email
                                             )
-                                            db.collection(userID)
-                                                .document("userData")
+                                            db.collection("users")
+                                                .document(userID)
                                                 .set(userData)
                                                 .addOnSuccessListener {
                                                     Toast.makeText(context, "Registration and login successful", Toast.LENGTH_SHORT).show()

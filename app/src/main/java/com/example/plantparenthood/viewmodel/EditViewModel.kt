@@ -16,10 +16,10 @@ import java.util.UUID
 class EditViewModel : ViewModel() {
     private val db = FirebaseFirestore.getInstance()
     private val currentUser = FirebaseAuth.getInstance().currentUser!!.uid
-    private val collectionRef = db.collection(currentUser)
-    val storage = FirebaseStorage.getInstance()
-    val storageRef: StorageReference = storage.reference
-    val imageRef = storageRef.child("images/${UUID.randomUUID()}.jpg")
+    private val collectionRef = db.collection("users").document(currentUser).collection("flowers")
+    private val storage = FirebaseStorage.getInstance()
+    private val storageRef: StorageReference = storage.reference
+    private val imageRef = storageRef.child("images/${UUID.randomUUID()}.jpg")
     fun addFlower(context: Context, flower: Flower) {
         collectionRef.add(flower)
             .addOnSuccessListener { documentReference ->

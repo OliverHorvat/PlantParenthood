@@ -18,27 +18,26 @@ class GardenViewModel : ViewModel() {
     suspend fun getFlowers(context: Context): List<Flower> = withContext(Dispatchers.IO) {
         try {
             val currentUser = FirebaseAuth.getInstance().currentUser!!.uid
-            val collectionRef = db.collection(currentUser)
+            val collectionRef = FirebaseFirestore.getInstance().collection("users").document(currentUser).collection("flowers")
             val querySnapshot = collectionRef.get().await()
             val newFlowers = mutableListOf<Flower>()
             for (document in querySnapshot.documents) {
-                if (document.id != "userData") {
-                    val image = document.getString("image") ?: ""
-                    val name = document.getString("name") ?: ""
-                    val type = document.getString("type") ?: ""
-                    val floweringTime = document.getTimestamp("floweringTime") ?: Timestamp(0, 0)
-                    newFlowers.add(
-                        Flower(
-                            image = image,
-                            name = name,
-                            type = type,
-                            floweringTime = floweringTime
-                        )
+                val image = document.getString("image") ?: ""
+                val name = document.getString("name") ?: ""
+                val type = document.getString("type") ?: ""
+                val floweringTime = document.getTimestamp("floweringTime") ?: Timestamp(0, 0)
+                newFlowers.add(
+                    Flower(
+                        image = image,
+                        name = name,
+                        type = type,
+                        floweringTime = floweringTime
                     )
-                }
+                )
             }
-            flowers.value = newFlowers
-            newFlowers
+            val sortedFlowers = newFlowers.sortedBy { it.name }
+            flowers.value = sortedFlowers
+            sortedFlowers
         } catch (e: Exception) {
             withContext(Dispatchers.Main) {
                 Toast.makeText(context, "Failed to add flower to your garden", Toast.LENGTH_SHORT).show()
