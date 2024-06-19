@@ -13,6 +13,7 @@ import WelcomeScreen
 import LoadingScreen
 import LoginViewModel
 import MainViewModel
+import PlantViewModel
 import RegisterViewModel
 import android.os.Bundle
 import android.widget.Toast
@@ -71,7 +72,7 @@ class MainActivity : ComponentActivity() {
                         GardenScreen(context = this@MainActivity, navController = navController, gardenViewModel = gardenViewModel)
                     }
                     composable("plant_screen") {
-                        PlantScreen(context = this@MainActivity, flower = gardenViewModel.screenFlower, navController = navController)
+                        PlantScreen(context = this@MainActivity, flower = gardenViewModel.screenFlower, navController = navController, plantViewModel = PlantViewModel())
                     }
                     composable("details_screen") {
                         DetailsScreen()

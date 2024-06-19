@@ -10,7 +10,6 @@ import com.example.plantparenthood.utils.AuthHelper
 class MainViewModel : ViewModel() {
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
 
-
     fun logOut(context: Context, navController: NavController) {
         viewModelScope.launch {
             AuthHelper.clearRememberMe(context)

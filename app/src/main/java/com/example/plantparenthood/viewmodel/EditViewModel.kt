@@ -10,7 +10,6 @@ import com.google.firebase.storage.StorageReference
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
-import java.io.File
 import java.util.UUID
 
 class EditViewModel : ViewModel() {

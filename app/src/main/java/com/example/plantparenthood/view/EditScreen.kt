@@ -1,4 +1,3 @@
-import EditViewModel
 import android.content.Context
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -27,12 +26,9 @@ import com.example.plantparenthood.ui.theme.backgroundGreen
 import com.example.plantparenthood.ui.theme.buttonGreen
 import com.google.firebase.Timestamp
 import java.util.Calendar
-import java.util.TimeZone
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import android.Manifest
@@ -266,7 +262,7 @@ fun EditScreen(context: Context, navController: NavController, editViewModel: Ed
                             .show()
                     } else if (year.toInt() > 1 && month.toInt() > 0 && day.toInt() > 0 && hour.toInt() > -1 && minute.toInt() > -1) {
                         Toast.makeText(context, "Saving in progress, please wait", Toast.LENGTH_SHORT).show()
-                        val calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
+                        val calendar = Calendar.getInstance()
                         calendar.set(
                             year.toInt(),
                             month.toInt() - 1,
@@ -275,6 +271,7 @@ fun EditScreen(context: Context, navController: NavController, editViewModel: Ed
                             minute.toInt(),
                             0
                         )
+
                         val floweringTime = Timestamp(calendar.time)
                         editViewModel.uploadImageToFirebase(capturedImageUri, { downloadUrl ->
                             val newFlower = Flower(
