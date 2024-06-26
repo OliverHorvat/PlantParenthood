@@ -41,7 +41,7 @@ import java.io.File
 import java.util.Objects
 import coil.compose.rememberImagePainter
 @Composable
-fun EditScreen(context: Context, navController: NavController, editViewModel: EditViewModel) {
+fun EditScreen(context: Context, flower: Flower, navController: NavController, editViewModel: EditViewModel) {
     val name = remember { mutableStateOf("") }
     var type by remember { mutableStateOf("") }
     var year by remember { mutableStateOf("") }
@@ -51,6 +51,25 @@ fun EditScreen(context: Context, navController: NavController, editViewModel: Ed
     var minute by remember { mutableStateOf("") }
     var showDialog by remember { mutableStateOf(false) }
     var plantTypes by remember { mutableStateOf<List<String>>(emptyList()) }
+    var imageCaptured by remember { mutableStateOf(false) }
+    var capturedImageUri by remember { mutableStateOf<Uri>(Uri.EMPTY) }
+
+    LaunchedEffect(flower.documentId) {
+        if (flower.documentId != "") {
+            name.value = flower.name
+            type = flower.type
+            val calendar = Calendar.getInstance()
+            calendar.time = flower.floweringTime.toDate()
+            year = calendar.get(Calendar.YEAR).toString()
+            month = (calendar.get(Calendar.MONTH) + 1).toString()
+            day = calendar.get(Calendar.DAY_OF_MONTH).toString()
+            hour = calendar.get(Calendar.HOUR_OF_DAY).toString()
+            minute = calendar.get(Calendar.MINUTE).toString()
+            if (flower.image != "") {
+                imageCaptured = true
+            }
+        }
+    }
 
     LaunchedEffect(showDialog) {
         if (showDialog) {
@@ -66,9 +85,6 @@ fun EditScreen(context: Context, navController: NavController, editViewModel: Ed
         Objects.requireNonNull(context),
         context.packageName + ".provider", file
     )
-
-    var imageCaptured by remember { mutableStateOf(false) }
-    var capturedImageUri by remember { mutableStateOf<Uri>(Uri.EMPTY) }
 
     val cameraLauncher =
         rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) { success ->
@@ -101,7 +117,7 @@ fun EditScreen(context: Context, navController: NavController, editViewModel: Ed
                 .padding(16.dp)
         ) {
             Button(
-                onClick = { navController.navigate("main_screen") },
+                onClick = { navController.navigateUp() },
                 colors = ButtonDefaults.buttonColors(containerColor = buttonGreen),
                 modifier = Modifier
                     .padding(top = 16.dp, start = 16.dp)
@@ -113,8 +129,13 @@ fun EditScreen(context: Context, navController: NavController, editViewModel: Ed
             Spacer(modifier = Modifier.height(24.dp))
 
             if (imageCaptured) {
+                val painter = if (capturedImageUri == Uri.EMPTY) {
+                    rememberImagePainter(data = flower.image)
+                } else {
+                    rememberImagePainter(capturedImageUri)
+                }
                 Image(
-                    painter = rememberImagePainter(capturedImageUri),
+                    painter = painter,
                     contentDescription = "Captured Image",
                     modifier = Modifier
                         .size(220.dp)
@@ -271,25 +292,44 @@ fun EditScreen(context: Context, navController: NavController, editViewModel: Ed
                             minute.toInt(),
                             0
                         )
-
                         val floweringTime = Timestamp(calendar.time)
-                        editViewModel.uploadImageToFirebase(capturedImageUri, { downloadUrl ->
-                            val newFlower = Flower(
-                                name = name.value,
-                                image = downloadUrl,
-                                floweringTime = floweringTime,
-                                type = type
+                        val newFlower = Flower(
+                            name = name.value,
+                            floweringTime = floweringTime,
+                            type = type
+                        )
+                        if (flower.documentId != ""){
+
+                            if (capturedImageUri == Uri.EMPTY){
+                                newFlower.image = flower.image
+                                editViewModel.editFlower(context, flower.documentId, newFlower)
+                            }
+                            else {
+                                editViewModel.uploadImageToFirebase(capturedImageUri,
+                                    onSuccess = { downloadUrl ->
+                                        newFlower.image = downloadUrl
+                                        editViewModel.editFlower(context, flower.documentId, newFlower)
+                                        editViewModel.deleteImageFromFirebase(flower.image)
+                                    },
+                                    onFailure = {
+                                        Toast.makeText(context, "Image has not been saved", Toast.LENGTH_SHORT).show()
+                                    }
+                                )
+                            }
+                        }
+                        else{
+                            editViewModel.uploadImageToFirebase(capturedImageUri,
+                                onSuccess = { downloadUrl ->
+                                    newFlower.image = downloadUrl
+                                    editViewModel.addFlower(context, newFlower)
+                                },
+                                onFailure = { filler ->
+                                    newFlower.image = filler
+                                    editViewModel.addFlower(context, newFlower)
+                                }
                             )
-                            editViewModel.addFlower(context, newFlower)
-                        }, { filler ->
-                            val newFlower = Flower(
-                                name = name.value,
-                                image = filler,
-                                floweringTime = floweringTime,
-                                type = type
-                            )
-                            editViewModel.addFlower(context, newFlower)
-                        })
+                        }
+
                     } else {
                         Toast.makeText(context, "Please input valid date", Toast.LENGTH_SHORT).show()
                     }

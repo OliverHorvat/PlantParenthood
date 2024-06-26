@@ -12,9 +12,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 class GardenViewModel : ViewModel() {
-    private val db = FirebaseFirestore.getInstance()
     private var flowers = mutableStateOf<List<Flower>>(emptyList())
     var screenFlower = Flower()
+    var screenFlowerId = ""
+
     suspend fun getFlowers(context: Context): List<Flower> = withContext(Dispatchers.IO) {
         try {
             val currentUser = FirebaseAuth.getInstance().currentUser!!.uid
@@ -31,7 +32,8 @@ class GardenViewModel : ViewModel() {
                         image = image,
                         name = name,
                         type = type,
-                        floweringTime = floweringTime
+                        floweringTime = floweringTime,
+                        documentId = document.id
                     )
                 )
             }
@@ -48,6 +50,7 @@ class GardenViewModel : ViewModel() {
 
     fun goToFlower(flower: Flower, navController: NavController){
         screenFlower = flower
+        screenFlowerId = flower.documentId
         navController.navigate("plant_screen")
     }
 }

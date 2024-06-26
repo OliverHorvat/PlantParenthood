@@ -59,6 +59,7 @@ class MainActivity : ComponentActivity() {
                         WelcomeScreen(navController = navController)
                     }
                     composable("main_screen") {
+                        gardenViewModel = viewModel()
                         MainScreen(context = this@MainActivity, navController = navController, mainViewModel = MainViewModel())
                     }
                     composable("register_screen") {
@@ -68,17 +69,16 @@ class MainActivity : ComponentActivity() {
                         LoginScreen(context = this@MainActivity, navController = navController, loginViewModel = LoginViewModel())
                     }
                     composable("garden_screen") {
-                        gardenViewModel = viewModel()
                         GardenScreen(context = this@MainActivity, navController = navController, gardenViewModel = gardenViewModel)
                     }
                     composable("plant_screen") {
-                        PlantScreen(context = this@MainActivity, flower = gardenViewModel.screenFlower, navController = navController, plantViewModel = PlantViewModel())
+                        PlantScreen(context = this@MainActivity, flowerId = gardenViewModel.screenFlowerId, navController = navController, plantViewModel = PlantViewModel())
                     }
                     composable("details_screen") {
                         DetailsScreen()
                     }
                     composable("edit_screen") {
-                        EditScreen(context = this@MainActivity, navController = navController, editViewModel = EditViewModel())
+                        EditScreen(context = this@MainActivity, flower = gardenViewModel.screenFlower, navController = navController, editViewModel = EditViewModel())
                     }
                 }
             }

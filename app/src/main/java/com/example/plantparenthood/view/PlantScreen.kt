@@ -1,4 +1,5 @@
 import android.content.Context
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -24,7 +25,7 @@ import java.util.concurrent.TimeUnit
 
 
 @Composable
-fun PlantScreen(context: Context, flower: Flower, navController: NavController, plantViewModel: PlantViewModel) {
+fun PlantScreen(context: Context, flowerId: String, navController: NavController, plantViewModel: PlantViewModel) {
     var daysBetweenWatering by remember { mutableIntStateOf(0) }
     val overdue = remember { mutableStateOf(false) }
     var days = remember { mutableStateOf(0) }
@@ -34,9 +35,10 @@ fun PlantScreen(context: Context, flower: Flower, navController: NavController, 
     var daysText = remember { mutableStateOf("") }
     var minutesText = remember { mutableStateOf("") }
     var hoursText = remember { mutableStateOf("") }
-
+    var flower by remember { mutableStateOf(Flower()) }
     LaunchedEffect(Unit) {
-        daysBetweenWatering = plantViewModel.fetchDaysBetweenWatering(context, flower.type)
+        flower = plantViewModel.getFlowerById(context, flowerId) ?: Flower()
+        daysBetweenWatering = plantViewModel.fetchDaysBetweenWatering(context, flower!!.type)
         isLoading = false
         while (true) {
             val (isOverdue, overdueMinutes) = plantViewModel.calculateWateringTime(
@@ -165,7 +167,7 @@ fun PlantScreen(context: Context, flower: Flower, navController: NavController, 
                 Spacer(modifier = Modifier.height(16.dp))
 
                 Button(
-                    onClick = { /* Handle edit plant action */ },
+                    onClick = { navController.navigate("edit_screen") },
                     colors = ButtonDefaults.buttonColors(containerColor = buttonGreen),
                     modifier = Modifier
                         .fillMaxWidth()
