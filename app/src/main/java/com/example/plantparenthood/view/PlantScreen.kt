@@ -2,7 +2,12 @@ import android.content.Context
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
@@ -21,11 +26,13 @@ import com.example.plantparenthood.R
 import com.example.plantparenthood.ui.theme.backgroundGreen
 import com.example.plantparenthood.ui.theme.buttonGreen
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
 
 
 @Composable
 fun PlantScreen(context: Context, flowerId: String, navController: NavController, plantViewModel: PlantViewModel) {
+    var refreshTrigger by remember { mutableStateOf(0) }
     var daysBetweenWatering by remember { mutableIntStateOf(0) }
     val overdue = remember { mutableStateOf(false) }
     var days = remember { mutableStateOf(0) }
@@ -36,7 +43,11 @@ fun PlantScreen(context: Context, flowerId: String, navController: NavController
     var minutesText = remember { mutableStateOf("") }
     var hoursText = remember { mutableStateOf("") }
     var flower by remember { mutableStateOf(Flower()) }
-    LaunchedEffect(Unit) {
+    var showDeleteDialog by remember { mutableStateOf(false) }
+    var showWaterDialog by remember { mutableStateOf(false) }
+    val coroutineScope = rememberCoroutineScope()
+
+    LaunchedEffect(refreshTrigger) {
         flower = plantViewModel.getFlowerById(context, flowerId) ?: Flower()
         daysBetweenWatering = plantViewModel.fetchDaysBetweenWatering(context, flower!!.type)
         isLoading = false
@@ -88,7 +99,7 @@ fun PlantScreen(context: Context, flowerId: String, navController: NavController
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Button(
-                        onClick = { navController.navigateUp() },
+                        onClick = { navController.navigate("garden_screen") },
                         colors = ButtonDefaults.buttonColors(containerColor = buttonGreen),
                         modifier = Modifier
                             .padding(top = 16.dp, start = 16.dp)
@@ -97,7 +108,7 @@ fun PlantScreen(context: Context, flowerId: String, navController: NavController
                     }
 
                     Button(
-                        onClick = { /* Handle delete action */ },
+                        onClick = { showDeleteDialog = true },
                         colors = ButtonDefaults.buttonColors(containerColor = buttonGreen),
                         modifier = Modifier
                             .padding(top = 16.dp, end = 16.dp)
@@ -154,7 +165,7 @@ fun PlantScreen(context: Context, flowerId: String, navController: NavController
                 Spacer(modifier = Modifier.height(24.dp))
 
                 Button(
-                    onClick = { /* Handle water plant action */ },
+                    onClick = { showWaterDialog = true },
                     colors = ButtonDefaults.buttonColors(containerColor = buttonGreen),
                     modifier = Modifier
                         .fillMaxWidth()
@@ -189,6 +200,80 @@ fun PlantScreen(context: Context, flowerId: String, navController: NavController
                 ) {
                     Text("Type Details", fontSize = 16.sp)
                 }
+            }
+            if (showDeleteDialog) {
+                AlertDialog(
+                    onDismissRequest = { showDeleteDialog = false },
+                    title = { Text(
+                        text = "Are you sure that you want to delete ''${flower.name}''?",
+                        modifier = Modifier.padding(8.dp),
+                        textAlign = TextAlign.Center
+                    )},
+                    confirmButton = {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(20.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Button(
+                                onClick = {
+                                    coroutineScope.launch {
+                                        plantViewModel.deleteFlowerById(context, flowerId, flower.image)
+                                        showDeleteDialog = false
+                                        navController.navigate("garden_screen")
+                                    } },
+                                colors = ButtonDefaults.buttonColors(containerColor = buttonGreen)
+                            ) {
+                                Text("Yes", fontSize = 18.sp)
+                            }
+
+                            Button(
+                                onClick = { showDeleteDialog = false },
+                                colors = ButtonDefaults.buttonColors(containerColor = buttonGreen)
+                            ) {
+                                Text("No", fontSize = 18.sp)
+                            }
+                        }
+                    }
+                )
+            }
+            if (showWaterDialog) {
+                AlertDialog(
+                    onDismissRequest = { showWaterDialog = false },
+                    title = { Text(
+                        text = "Please confirm watering ''${flower.name}''",
+                        modifier = Modifier.padding(8.dp),
+                        textAlign = TextAlign.Center
+                    )},
+                    confirmButton = {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(12.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Button(
+                                onClick = {
+                                    coroutineScope.launch {
+                                        plantViewModel.updateWateringTime(context, flowerId)
+                                        showWaterDialog = false
+                                        refreshTrigger++
+                                    }},
+                                colors = ButtonDefaults.buttonColors(containerColor = buttonGreen)
+                            ) {
+                                Text("Confirm", fontSize = 18.sp)
+                            }
+
+                            Button(
+                                onClick = { showDeleteDialog = false },
+                                colors = ButtonDefaults.buttonColors(containerColor = buttonGreen)
+                            ) {
+                                Text("Dismiss", fontSize = 18.sp)
+                            }
+                        }
+                    }
+                )
             }
         }
     }
