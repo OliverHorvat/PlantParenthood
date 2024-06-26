@@ -32,7 +32,7 @@ fun GardenScreen(context: Context, navController: NavController, gardenViewModel
     LaunchedEffect(Unit) {
         val flowers = gardenViewModel.getFlowers(context)
         val items = flowers.map { flower ->
-            Flower(name = flower.name, image = flower.image, type = flower.type, floweringTime = flower.floweringTime, documentId = flower.documentId)
+            Flower(name = flower.name, image = flower.image, type = flower.type, documentId = flower.documentId)
         }
         itemsState.value = items
     }

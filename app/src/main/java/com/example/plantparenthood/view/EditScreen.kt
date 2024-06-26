@@ -41,7 +41,7 @@ import java.io.File
 import java.util.Objects
 import coil.compose.rememberImagePainter
 @Composable
-fun EditScreen(context: Context, flower: Flower, navController: NavController, editViewModel: EditViewModel) {
+fun EditScreen(context: Context, flowerId: String, navController: NavController, editViewModel: EditViewModel) {
     val name = remember { mutableStateOf("") }
     var type by remember { mutableStateOf("") }
     var year by remember { mutableStateOf("") }
@@ -53,9 +53,14 @@ fun EditScreen(context: Context, flower: Flower, navController: NavController, e
     var plantTypes by remember { mutableStateOf<List<String>>(emptyList()) }
     var imageCaptured by remember { mutableStateOf(false) }
     var capturedImageUri by remember { mutableStateOf<Uri>(Uri.EMPTY) }
+    var flower by remember { mutableStateOf(Flower()) }
+    var isLoading by remember { mutableStateOf(true) }
 
-    LaunchedEffect(flower.documentId) {
-        if (flower.documentId != "") {
+
+    LaunchedEffect(Unit) {
+        plantTypes = editViewModel.getPlantTypes()
+        if (flowerId != "") {
+            flower = editViewModel.getFlowerById(context, flowerId) ?: Flower()
             name.value = flower.name
             type = flower.type
             val calendar = Calendar.getInstance()
@@ -69,13 +74,9 @@ fun EditScreen(context: Context, flower: Flower, navController: NavController, e
                 imageCaptured = true
             }
         }
+        isLoading = false
     }
 
-    LaunchedEffect(showDialog) {
-        if (showDialog) {
-            plantTypes = editViewModel.getPlantTypes()
-        }
-    }
     val file = File.createTempFile(
         "flower",
         ".jpg",
@@ -111,277 +112,292 @@ fun EditScreen(context: Context, flower: Flower, navController: NavController, e
             .fillMaxSize()
             .background(backgroundGreen)
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp)
-        ) {
-            Button(
-                onClick = { navController.navigateUp() },
-                colors = ButtonDefaults.buttonColors(containerColor = buttonGreen),
+        if(!isLoading) {
+            Column(
                 modifier = Modifier
-                    .padding(top = 16.dp, start = 16.dp)
-                    .wrapContentWidth()
+                    .fillMaxSize()
+                    .padding(16.dp)
             ) {
-                Text("Return", fontSize = 16.sp)
-            }
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            if (imageCaptured) {
-                val painter = if (capturedImageUri == Uri.EMPTY) {
-                    rememberImagePainter(data = flower.image)
-                } else {
-                    rememberImagePainter(capturedImageUri)
+                Button(
+                    onClick = { navController.navigateUp() },
+                    colors = ButtonDefaults.buttonColors(containerColor = buttonGreen),
+                    modifier = Modifier
+                        .padding(top = 16.dp, start = 16.dp)
+                        .wrapContentWidth()
+                ) {
+                    Text("Return", fontSize = 16.sp)
                 }
-                Image(
-                    painter = painter,
-                    contentDescription = "Captured Image",
-                    modifier = Modifier
-                        .size(220.dp)
-                        .align(Alignment.CenterHorizontally)
-                )
-            } else {
-                Image(
-                    painter = painterResource(id = R.drawable.a),
-                    contentDescription = "Logo",
-                    modifier = Modifier
-                        .size(220.dp)
-                        .align(Alignment.CenterHorizontally)
-                )
-            }
 
-            Spacer(modifier = Modifier.height(40.dp))
+                Spacer(modifier = Modifier.height(24.dp))
 
-            OutlinedTextField(
-                value = name.value,
-
-                onValueChange = { name.value = it },
-                label = { Text("Plant's Name") },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 32.dp)
-            )
-
-            Spacer(modifier = Modifier.height(20.dp))
-
-            Text(
-                text = "Last Watering Time:",
-                fontSize = 16.sp,
-                textAlign = TextAlign.Center,
-                color = Color.Black,
-                modifier = Modifier.align(Alignment.CenterHorizontally)
-            )
-
-            Spacer(modifier = Modifier.height(4.dp))
-
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                OutlinedTextField(
-                    value = year,
-                    label = { Text("YYYY", style = TextStyle(fontSize = 10.sp)) },
-                    onValueChange = { year = it.filter { char -> char.isDigit() }.take(4) },
-                    singleLine = true,
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    modifier = Modifier
-                        .weight(2f)
-                        .padding(horizontal = 4.dp)
-                )
-                Spacer(modifier = Modifier.width(2.dp))
-                OutlinedTextField(
-                    value = month,
-                    label = { Text(text = "MM", style = TextStyle(fontSize = 10.sp)) },
-                    onValueChange = { month = it.filter { char -> char.isDigit() }.take(2) },
-                    singleLine = true,
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(horizontal = 4.dp)
-                )
-                Spacer(modifier = Modifier.width(2.dp))
-                OutlinedTextField(
-                    value = day,
-                    label = { Text("DD", style = TextStyle(fontSize = 10.sp)) },
-                    onValueChange = { day = it.filter { char -> char.isDigit() }.take(2) },
-                    singleLine = true,
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(horizontal = 4.dp)
-                )
-                Spacer(modifier = Modifier.width(2.dp))
-                OutlinedTextField(
-                    value = hour,
-                    label = { Text("HH", style = TextStyle(fontSize = 10.sp)) },
-                    onValueChange = { hour = it.filter { char -> char.isDigit() }.take(2) },
-                    singleLine = true,
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(horizontal = 4.dp)
-                )
-                Spacer(modifier = Modifier.width(2.dp))
-                OutlinedTextField(
-                    value = minute,
-                    label = { Text("mm", style = TextStyle(fontSize = 10.sp)) },
-                    onValueChange = { minute = it.filter { char -> char.isDigit() }.take(2) },
-                    singleLine = true,
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(horizontal = 4.dp)
-                )
-            }
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            Button(
-                onClick = {
-                    val permissionCheckResult =
-                        ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA)
-
-                    if (permissionCheckResult == PackageManager.PERMISSION_GRANTED) {
-                        cameraLauncher.launch(uri)
+                if (imageCaptured) {
+                    val painter = if (capturedImageUri == Uri.EMPTY) {
+                        rememberImagePainter(data = flower.image)
                     } else {
-                        permissionLauncher.launch(Manifest.permission.CAMERA)
+                        rememberImagePainter(capturedImageUri)
                     }
-                },
-                colors = ButtonDefaults.buttonColors(containerColor = buttonGreen),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 32.dp)
-                    .height(48.dp)
-            ) {
-                Text("Take a Picture", fontSize = 16.sp)
-            }
+                    Image(
+                        painter = painter,
+                        contentDescription = "Captured Image",
+                        modifier = Modifier
+                            .size(220.dp)
+                            .align(Alignment.CenterHorizontally)
+                    )
+                } else {
+                    Image(
+                        painter = painterResource(id = R.drawable.a),
+                        contentDescription = "Logo",
+                        modifier = Modifier
+                            .size(220.dp)
+                            .align(Alignment.CenterHorizontally)
+                    )
+                }
 
-            Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(40.dp))
 
-            Button(
-                onClick = { showDialog = true },
-                colors = ButtonDefaults.buttonColors(containerColor = buttonGreen),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 32.dp)
-                    .height(48.dp)
-            ) {
-                Text("Select Plant Type", fontSize = 16.sp)
-            }
+                OutlinedTextField(
+                    value = name.value,
 
-            Spacer(modifier = Modifier.height(16.dp))
+                    onValueChange = { name.value = it },
+                    label = { Text("Plant's Name") },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 32.dp)
+                )
 
-            Button(
-                onClick = {
-                    if (name.value == "") {
-                        Toast.makeText(context, "Please input name", Toast.LENGTH_SHORT).show()
-                    } else if (type == "") {
-                        Toast.makeText(context, "Please select type", Toast.LENGTH_SHORT).show()
-                    } else if (year == "" || month == "" || day == "" || hour == "" || minute == "") {
-                        Toast.makeText(context, "Please fill in all fields", Toast.LENGTH_SHORT)
-                            .show()
-                    } else if (year.toInt() > 1 && month.toInt() > 0 && day.toInt() > 0 && hour.toInt() > -1 && minute.toInt() > -1) {
-                        Toast.makeText(context, "Saving in progress, please wait", Toast.LENGTH_SHORT).show()
-                        val calendar = Calendar.getInstance()
-                        calendar.set(
-                            year.toInt(),
-                            month.toInt() - 1,
-                            day.toInt(),
-                            hour.toInt(),
-                            minute.toInt(),
-                            0
-                        )
-                        val floweringTime = Timestamp(calendar.time)
-                        val newFlower = Flower(
-                            name = name.value,
-                            floweringTime = floweringTime,
-                            type = type
-                        )
-                        if (flower.documentId != ""){
+                Spacer(modifier = Modifier.height(20.dp))
 
-                            if (capturedImageUri == Uri.EMPTY){
-                                newFlower.image = flower.image
-                                editViewModel.editFlower(context, flower.documentId, newFlower)
-                            }
-                            else {
+                Text(
+                    text = "Last Watering Time:",
+                    fontSize = 16.sp,
+                    textAlign = TextAlign.Center,
+                    color = Color.Black,
+                    modifier = Modifier.align(Alignment.CenterHorizontally)
+                )
+
+                Spacer(modifier = Modifier.height(4.dp))
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    OutlinedTextField(
+                        value = year,
+                        label = { Text("YYYY", style = TextStyle(fontSize = 10.sp)) },
+                        onValueChange = { year = it.filter { char -> char.isDigit() }.take(4) },
+                        singleLine = true,
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        modifier = Modifier
+                            .weight(2f)
+                            .padding(horizontal = 4.dp)
+                    )
+                    Spacer(modifier = Modifier.width(2.dp))
+                    OutlinedTextField(
+                        value = month,
+                        label = { Text(text = "MM", style = TextStyle(fontSize = 10.sp)) },
+                        onValueChange = { month = it.filter { char -> char.isDigit() }.take(2) },
+                        singleLine = true,
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(horizontal = 4.dp)
+                    )
+                    Spacer(modifier = Modifier.width(2.dp))
+                    OutlinedTextField(
+                        value = day,
+                        label = { Text("DD", style = TextStyle(fontSize = 10.sp)) },
+                        onValueChange = { day = it.filter { char -> char.isDigit() }.take(2) },
+                        singleLine = true,
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(horizontal = 4.dp)
+                    )
+                    Spacer(modifier = Modifier.width(2.dp))
+                    OutlinedTextField(
+                        value = hour,
+                        label = { Text("HH", style = TextStyle(fontSize = 10.sp)) },
+                        onValueChange = { hour = it.filter { char -> char.isDigit() }.take(2) },
+                        singleLine = true,
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(horizontal = 4.dp)
+                    )
+                    Spacer(modifier = Modifier.width(2.dp))
+                    OutlinedTextField(
+                        value = minute,
+                        label = { Text("mm", style = TextStyle(fontSize = 10.sp)) },
+                        onValueChange = { minute = it.filter { char -> char.isDigit() }.take(2) },
+                        singleLine = true,
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(horizontal = 4.dp)
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                Button(
+                    onClick = {
+                        val permissionCheckResult =
+                            ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA)
+
+                        if (permissionCheckResult == PackageManager.PERMISSION_GRANTED) {
+                            cameraLauncher.launch(uri)
+                        } else {
+                            permissionLauncher.launch(Manifest.permission.CAMERA)
+                        }
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = buttonGreen),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 32.dp)
+                        .height(48.dp)
+                ) {
+                    Text("Take a Picture", fontSize = 16.sp)
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Button(
+                    onClick = { showDialog = true },
+                    colors = ButtonDefaults.buttonColors(containerColor = buttonGreen),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 32.dp)
+                        .height(48.dp)
+                ) {
+                    Text("Select Plant Type", fontSize = 16.sp)
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Button(
+                    onClick = {
+                        if (name.value == "") {
+                            Toast.makeText(context, "Please input name", Toast.LENGTH_SHORT).show()
+                        } else if (type == "") {
+                            Toast.makeText(context, "Please select type", Toast.LENGTH_SHORT).show()
+                        } else if (year == "" || month == "" || day == "" || hour == "" || minute == "") {
+                            Toast.makeText(context, "Please fill in all fields", Toast.LENGTH_SHORT)
+                                .show()
+                        } else if (year.toInt() > 1 && month.toInt() > 0 && day.toInt() > 0 && hour.toInt() > -1 && minute.toInt() > -1) {
+                            Toast.makeText(
+                                context,
+                                "Saving in progress, please wait",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            val calendar = Calendar.getInstance()
+                            calendar.set(
+                                year.toInt(),
+                                month.toInt() - 1,
+                                day.toInt(),
+                                hour.toInt(),
+                                minute.toInt(),
+                                0
+                            )
+                            val floweringTime = Timestamp(calendar.time)
+                            val newFlower = Flower(
+                                name = name.value,
+                                floweringTime = floweringTime,
+                                type = type
+                            )
+                            if (flower.documentId != "") {
+
+                                if (capturedImageUri == Uri.EMPTY) {
+                                    newFlower.image = flower.image
+                                    editViewModel.editFlower(context, flower.documentId, newFlower)
+                                } else {
+                                    editViewModel.uploadImageToFirebase(capturedImageUri,
+                                        onSuccess = { downloadUrl ->
+                                            newFlower.image = downloadUrl
+                                            editViewModel.editFlower(
+                                                context,
+                                                flower.documentId,
+                                                newFlower
+                                            )
+                                            editViewModel.deleteImageFromFirebase(flower.image)
+                                        },
+                                        onFailure = {
+                                            Toast.makeText(
+                                                context,
+                                                "Image has not been saved",
+                                                Toast.LENGTH_SHORT
+                                            ).show()
+                                        }
+                                    )
+                                }
+                            } else {
                                 editViewModel.uploadImageToFirebase(capturedImageUri,
                                     onSuccess = { downloadUrl ->
                                         newFlower.image = downloadUrl
-                                        editViewModel.editFlower(context, flower.documentId, newFlower)
-                                        editViewModel.deleteImageFromFirebase(flower.image)
+                                        editViewModel.addFlower(context, newFlower)
                                     },
-                                    onFailure = {
-                                        Toast.makeText(context, "Image has not been saved", Toast.LENGTH_SHORT).show()
+                                    onFailure = { filler ->
+                                        newFlower.image = filler
+                                        editViewModel.addFlower(context, newFlower)
                                     }
                                 )
                             }
-                        }
-                        else{
-                            editViewModel.uploadImageToFirebase(capturedImageUri,
-                                onSuccess = { downloadUrl ->
-                                    newFlower.image = downloadUrl
-                                    editViewModel.addFlower(context, newFlower)
-                                },
-                                onFailure = { filler ->
-                                    newFlower.image = filler
-                                    editViewModel.addFlower(context, newFlower)
-                                }
-                            )
-                        }
-
-                    } else {
-                        Toast.makeText(context, "Please input valid date", Toast.LENGTH_SHORT).show()
-                    }
-                },
-                colors = ButtonDefaults.buttonColors(containerColor = buttonGreen),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 32.dp)
-                    .height(48.dp)
-            ) {
-                Text("Save", fontSize = 16.sp)
-            }
-        }
-        if (showDialog) {
-            AlertDialog(
-                onDismissRequest = { showDialog = false },
-                title = { Text(text = "Select Plant Type") },
-                text = {
-                    LazyColumn {
-                        items(plantTypes) { plantType ->
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(8.dp)
-                                    .clickable {
-                                        type = plantType
-                                        showDialog = false
-                                    }
-                                    .background(
-                                        color = buttonGreen,
-                                        shape = RoundedCornerShape(16.dp)
-                                    )
-                                    .padding(16.dp)
-                            ) {
-                                Text(
-                                    text = plantType,
-                                    color = Color.White,
-                                    modifier = Modifier.fillMaxWidth()
-                                )
+                            if(flowerId != ""){
+                                navController.navigate("plant_screen")
                             }
+                        } else {
+                            Toast.makeText(context, "Please input valid date", Toast.LENGTH_SHORT)
+                                .show()
                         }
-                    }
-                },
-                confirmButton = {
-                    Button(
-                        onClick = { showDialog = false },
-                        colors = ButtonDefaults.buttonColors(containerColor = buttonGreen)
-                    ) {
-                        Text("Close")
-                    }
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = buttonGreen),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 32.dp)
+                        .height(48.dp)
+                ) {
+                    Text("Save", fontSize = 16.sp)
                 }
-            )
+            }
+            if (showDialog) {
+                AlertDialog(
+                    onDismissRequest = { showDialog = false },
+                    title = { Text(text = "Select Plant Type") },
+                    text = {
+                        LazyColumn {
+                            items(plantTypes) { plantType ->
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(8.dp)
+                                        .clickable {
+                                            type = plantType
+                                            showDialog = false
+                                        }
+                                        .background(
+                                            color = buttonGreen,
+                                            shape = RoundedCornerShape(16.dp)
+                                        )
+                                        .padding(16.dp)
+                                ) {
+                                    Text(
+                                        text = plantType,
+                                        color = Color.White,
+                                        modifier = Modifier.fillMaxWidth()
+                                    )
+                                }
+                            }
+                        }
+                    },
+                    confirmButton = {
+                        Button(
+                            onClick = { showDialog = false },
+                            colors = ButtonDefaults.buttonColors(containerColor = buttonGreen)
+                        ) {
+                            Text("Close")
+                        }
+                    }
+                )
+            }
         }
     }
 }

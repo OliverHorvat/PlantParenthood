@@ -13,9 +13,8 @@ import kotlinx.coroutines.withContext
 
 class GardenViewModel : ViewModel() {
     private var flowers = mutableStateOf<List<Flower>>(emptyList())
-    var screenFlower = Flower()
     var screenFlowerId = ""
-
+    var screenFlowerType = ""
     suspend fun getFlowers(context: Context): List<Flower> = withContext(Dispatchers.IO) {
         try {
             val currentUser = FirebaseAuth.getInstance().currentUser!!.uid
@@ -26,13 +25,11 @@ class GardenViewModel : ViewModel() {
                 val image = document.getString("image") ?: ""
                 val name = document.getString("name") ?: ""
                 val type = document.getString("type") ?: ""
-                val floweringTime = document.getTimestamp("floweringTime") ?: Timestamp(0, 0)
                 newFlowers.add(
                     Flower(
                         image = image,
                         name = name,
                         type = type,
-                        floweringTime = floweringTime,
                         documentId = document.id
                     )
                 )
@@ -49,8 +46,8 @@ class GardenViewModel : ViewModel() {
     }
 
     fun goToFlower(flower: Flower, navController: NavController){
-        screenFlower = flower
         screenFlowerId = flower.documentId
+        screenFlowerType = flower.type
         navController.navigate("plant_screen")
     }
 }

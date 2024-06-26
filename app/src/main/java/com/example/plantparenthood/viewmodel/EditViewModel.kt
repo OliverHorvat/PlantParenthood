@@ -4,6 +4,7 @@ import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import com.example.plantparenthood.Flower
+import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
@@ -22,6 +23,31 @@ class EditViewModel : ViewModel() {
     private val storage = FirebaseStorage.getInstance()
     private val storageRef: StorageReference = storage.reference
     private val imageRef = storageRef.child("images/${UUID.randomUUID()}.jpg")
+    suspend fun getFlowerById(context:Context, documentId: String): Flower? {
+        try {
+            val currentUser = FirebaseAuth.getInstance().currentUser!!.uid
+            val documentSnapshot = db.collection("users").document(currentUser).collection("flowers").document(documentId).get().await()
+
+            if (documentSnapshot.exists()) {
+                val image = documentSnapshot.getString("image") ?: ""
+                val name = documentSnapshot.getString("name") ?: ""
+                val type = documentSnapshot.getString("type") ?: ""
+                val floweringTime = documentSnapshot.getTimestamp("floweringTime") ?: Timestamp(0, 0)
+
+                return Flower(
+                    image = image,
+                    name = name,
+                    type = type,
+                    floweringTime = floweringTime,
+                    documentId = documentSnapshot.id
+                )
+            }
+        } catch (e: Exception) {
+            Toast.makeText(context, "Failed to load data", Toast.LENGTH_SHORT).show()
+            e.printStackTrace()
+        }
+        return null
+    }
     fun addFlower(context: Context, flower: Flower) {
         collectionRef.add(flower)
             .addOnSuccessListener { documentReference ->

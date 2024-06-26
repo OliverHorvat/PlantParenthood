@@ -12,7 +12,7 @@ import kotlinx.coroutines.tasks.await
 import kotlin.math.abs
 
 class PlantViewModel : ViewModel() {
-
+    var type = ""
     private val db = FirebaseFirestore.getInstance()
     private val currentUser = FirebaseAuth.getInstance().currentUser!!.uid
     private val collectionRef = db.collection("users").document(currentUser).collection("flowers")
@@ -63,19 +63,21 @@ class PlantViewModel : ViewModel() {
 
         if (documentSnapshot.exists()) {
             documentRef.delete().await()
-            val startIndex = imageUrl.indexOf("images%2F") + "images%2F".length
-            val endIndex = imageUrl.indexOf(".jpg", startIndex) + ".jpg".length
-            val imageId = imageUrl.substring(startIndex, endIndex)
-            val storage = Firebase.storage
-            val imageRef = storage.reference.child("images/$imageId")
-            imageRef.delete()
-                .addOnCompleteListener { task ->
-                    if (task.isSuccessful) {
-                        Log.d("DeleteImage", "Image is deleted successfully")
-                    } else {
-                        Log.d("DeleteImage", "Image is not deleted successfully")
+            if (imageUrl != "") {
+                val startIndex = imageUrl.indexOf("images%2F") + "images%2F".length
+                val endIndex = imageUrl.indexOf(".jpg", startIndex) + ".jpg".length
+                val imageId = imageUrl.substring(startIndex, endIndex)
+                val storage = Firebase.storage
+                val imageRef = storage.reference.child("images/$imageId")
+                imageRef.delete()
+                    .addOnCompleteListener { task ->
+                        if (task.isSuccessful) {
+                            Log.d("DeleteImage", "Image is deleted successfully")
+                        } else {
+                            Log.d("DeleteImage", "Image is not deleted successfully")
+                        }
                     }
-                }
+            }
             Toast.makeText(context, "Flower deleted successfully", Toast.LENGTH_SHORT).show()
         } else {
             Toast.makeText(context, "Something went wrong, please check your internet connection", Toast.LENGTH_SHORT).show()

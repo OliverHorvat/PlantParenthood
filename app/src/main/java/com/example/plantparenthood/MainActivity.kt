@@ -1,6 +1,7 @@
 package com.example.plantparenthood
 
 import DetailsScreen
+import DetailsViewModel
 import EditScreen
 import EditViewModel
 import LoginScreen
@@ -40,6 +41,8 @@ class MainActivity : ComponentActivity() {
                 val navController = rememberNavController()
                 var startDestination by remember { mutableStateOf("loading_screen") }
                 var gardenViewModel: GardenViewModel = viewModel()
+                var plantViewModel: PlantViewModel = viewModel()
+
                 LaunchedEffect(Unit) {
                     val (savedEmail, savedPassword) = AuthHelper.loadCredentials(this@MainActivity)
                     val isRememberMeChecked = AuthHelper.isRememberMeChecked(this@MainActivity)
@@ -72,13 +75,14 @@ class MainActivity : ComponentActivity() {
                         GardenScreen(context = this@MainActivity, navController = navController, gardenViewModel = gardenViewModel)
                     }
                     composable("plant_screen") {
-                        PlantScreen(context = this@MainActivity, flowerId = gardenViewModel.screenFlowerId, navController = navController, plantViewModel = PlantViewModel())
+                        plantViewModel = viewModel()
+                        PlantScreen(context = this@MainActivity, flowerId = gardenViewModel.screenFlowerId, navController = navController, plantViewModel = plantViewModel)
                     }
                     composable("details_screen") {
-                        DetailsScreen()
+                        DetailsScreen(context = this@MainActivity, type = plantViewModel.type, navController = navController, detailsViewModel = DetailsViewModel())
                     }
                     composable("edit_screen") {
-                        EditScreen(context = this@MainActivity, flower = gardenViewModel.screenFlower, navController = navController, editViewModel = EditViewModel())
+                        EditScreen(context = this@MainActivity, flowerId = gardenViewModel.screenFlowerId, navController = navController, editViewModel = EditViewModel())
                     }
                 }
             }

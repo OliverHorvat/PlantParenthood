@@ -29,7 +29,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
 
-
 @Composable
 fun PlantScreen(context: Context, flowerId: String, navController: NavController, plantViewModel: PlantViewModel) {
     var refreshTrigger by remember { mutableStateOf(0) }
@@ -78,6 +77,7 @@ fun PlantScreen(context: Context, flowerId: String, navController: NavController
             } else {
                 "${minutes.value} minutes"
             }
+            plantViewModel.type = flower.type
             delay(60000)
         }
     }
@@ -191,7 +191,7 @@ fun PlantScreen(context: Context, flowerId: String, navController: NavController
                 Spacer(modifier = Modifier.height(16.dp))
 
                 Button(
-                    onClick = { /* Handle details action */ },
+                    onClick = { navController.navigate("details_screen") },
                     colors = ButtonDefaults.buttonColors(containerColor = buttonGreen),
                     modifier = Modifier
                         .fillMaxWidth()
@@ -266,7 +266,7 @@ fun PlantScreen(context: Context, flowerId: String, navController: NavController
                             }
 
                             Button(
-                                onClick = { showDeleteDialog = false },
+                                onClick = { showWaterDialog = false },
                                 colors = ButtonDefaults.buttonColors(containerColor = buttonGreen)
                             ) {
                                 Text("Dismiss", fontSize = 18.sp)
