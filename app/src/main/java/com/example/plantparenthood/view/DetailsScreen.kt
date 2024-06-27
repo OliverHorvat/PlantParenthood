@@ -14,7 +14,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.navigation.NavController
 import coil.compose.rememberImagePainter
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.rememberLottieComposition
 import com.example.plantparenthood.FlowerTypeModel
+import com.example.plantparenthood.R
 import com.example.plantparenthood.ui.theme.backgroundGreen
 import com.example.plantparenthood.ui.theme.buttonGreen
 
@@ -22,6 +26,7 @@ import com.example.plantparenthood.ui.theme.buttonGreen
 fun DetailsScreen(context:Context, type: String, navController: NavController, detailsViewModel: DetailsViewModel) {
     var typeDetails by remember { mutableStateOf(FlowerTypeModel()) }
     var isLoading by remember { mutableStateOf(true) }
+    val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.load))
 
     LaunchedEffect(Unit) {
         typeDetails = detailsViewModel.getTypeDetails(context, type) ?: FlowerTypeModel()
@@ -37,8 +42,9 @@ fun DetailsScreen(context:Context, type: String, navController: NavController, d
                 .fillMaxSize()
                 .padding(16.dp)
         ) {
-            if(!isLoading) {
-
+            if(isLoading){
+                LottieAnimation(modifier = Modifier.fillMaxSize(), composition = composition, speed = 3f)
+            } else {
                 Button(
                 onClick = { navController.navigateUp() },
                 colors = ButtonDefaults.buttonColors(containerColor = buttonGreen),

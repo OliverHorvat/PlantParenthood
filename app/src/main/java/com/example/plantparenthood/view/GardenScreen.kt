@@ -10,8 +10,10 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -20,6 +22,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.rememberImagePainter
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.rememberLottieComposition
 import com.example.plantparenthood.Flower
 import com.example.plantparenthood.ui.theme.backgroundGreen
 import com.example.plantparenthood.ui.theme.buttonGreen
@@ -28,6 +33,8 @@ import com.example.plantparenthood.R
 @Composable
 fun GardenScreen(context: Context, navController: NavController, gardenViewModel: GardenViewModel) {
     val itemsState = remember { mutableStateOf<List<Flower>>(emptyList()) }
+    var isLoading by remember { mutableStateOf(true) }
+    val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.load))
 
     LaunchedEffect(Unit) {
         val flowers = gardenViewModel.getFlowers(context)
@@ -35,6 +42,7 @@ fun GardenScreen(context: Context, navController: NavController, gardenViewModel
             Flower(name = flower.name, image = flower.image, type = flower.type, documentId = flower.documentId)
         }
         itemsState.value = items
+        isLoading = false
     }
 
     Column {
@@ -44,16 +52,20 @@ fun GardenScreen(context: Context, navController: NavController, gardenViewModel
                 .background(backgroundGreen)
         ) {
             Column {
-                Button(
-                    onClick = { navController.navigate("main_screen") },
-                    colors = ButtonDefaults.buttonColors(containerColor = buttonGreen),
-                    modifier = Modifier
-                        .padding(top = 16.dp, start = 16.dp, bottom = 16.dp)
-                        .wrapContentWidth()
-                ) {
-                    Text("Return", fontSize = 16.sp)
+                if(isLoading){
+                    LottieAnimation(modifier = Modifier.fillMaxSize(), composition = composition, speed = 3f)
+                } else {
+                    Button(
+                        onClick = { navController.navigate("main_screen") },
+                        colors = ButtonDefaults.buttonColors(containerColor = buttonGreen),
+                        modifier = Modifier
+                            .padding(top = 16.dp, start = 16.dp, bottom = 16.dp)
+                            .wrapContentWidth()
+                    ) {
+                        Text("Return", fontSize = 16.sp)
+                    }
+                    RecyclerView(itemsState.value, navController, gardenViewModel)
                 }
-                RecyclerView(itemsState.value, navController, gardenViewModel)
             }
         }
     }

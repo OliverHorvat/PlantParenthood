@@ -40,6 +40,11 @@ import androidx.compose.material3.AlertDialog
 import java.io.File
 import java.util.Objects
 import coil.compose.rememberImagePainter
+import com.airbnb.lottie.compose.LottieAnimatable
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.rememberLottieComposition
+
 @Composable
 fun EditScreen(context: Context, flowerId: String, navController: NavController, editViewModel: EditViewModel) {
     val name = remember { mutableStateOf("") }
@@ -55,7 +60,7 @@ fun EditScreen(context: Context, flowerId: String, navController: NavController,
     var capturedImageUri by remember { mutableStateOf<Uri>(Uri.EMPTY) }
     var flower by remember { mutableStateOf(Flower()) }
     var isLoading by remember { mutableStateOf(true) }
-
+    val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.load))
 
     LaunchedEffect(Unit) {
         plantTypes = editViewModel.getPlantTypes()
@@ -112,7 +117,9 @@ fun EditScreen(context: Context, flowerId: String, navController: NavController,
             .fillMaxSize()
             .background(backgroundGreen)
     ) {
-        if(!isLoading) {
+        if(isLoading){
+            LottieAnimation(modifier = Modifier.fillMaxSize(), composition = composition, speed = 3f)
+        } else {
             Column(
                 modifier = Modifier
                     .fillMaxSize()

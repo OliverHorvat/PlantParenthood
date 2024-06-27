@@ -20,6 +20,8 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.runtime.*
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -54,7 +56,12 @@ class MainActivity : ComponentActivity() {
                         startDestination = "welcome_screen"
                     }
                 }
-                NavHost(navController = navController, startDestination = startDestination) {
+                NavHost(
+                    navController = navController,
+                    startDestination = startDestination,
+                    enterTransition = { EnterTransition.None },
+                    exitTransition = { ExitTransition.None } )
+                {
                     composable("loading_screen") {
                         LoadingScreen(navController = navController)
                     }

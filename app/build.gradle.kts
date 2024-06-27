@@ -74,5 +74,6 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
 
     implementation ("io.coil-kt:coil-compose:1.4.0")
+    implementation ("com.airbnb.android:lottie-compose:6.0.0")
 
 }

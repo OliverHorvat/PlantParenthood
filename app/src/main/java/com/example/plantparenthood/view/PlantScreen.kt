@@ -21,6 +21,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.navigation.NavController
 import coil.compose.rememberImagePainter
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.rememberLottieComposition
 import com.example.plantparenthood.Flower
 import com.example.plantparenthood.R
 import com.example.plantparenthood.ui.theme.backgroundGreen
@@ -45,6 +48,7 @@ fun PlantScreen(context: Context, flowerId: String, navController: NavController
     var showDeleteDialog by remember { mutableStateOf(false) }
     var showWaterDialog by remember { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
+    val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.load))
 
     LaunchedEffect(refreshTrigger) {
         flower = plantViewModel.getFlowerById(context, flowerId) ?: Flower()
@@ -87,7 +91,9 @@ fun PlantScreen(context: Context, flowerId: String, navController: NavController
             .fillMaxSize()
             .background(backgroundGreen)
     ) {
-        if(!isLoading){
+        if(isLoading){
+            LottieAnimation(modifier = Modifier.fillMaxSize(), composition = composition, speed = 3f)
+        } else {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
