@@ -30,7 +30,7 @@ fun MainScreen(context: Context, navController: NavController, mainViewModel: Ma
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Image(
-                painter = painterResource(id = R.drawable.a),
+                painter = painterResource(id = R.drawable.logo),
                 contentDescription = "Logo",
                 modifier = Modifier
                     .size(360.dp)

@@ -98,7 +98,7 @@ fun ListFlowerView(item: Flower, navController: NavController, gardenViewModel: 
             val painter = if (item.image != "") {
                 rememberImagePainter(data = item.image)
             } else {
-                painterResource(id = R.drawable.a)
+                painterResource(id = R.drawable.plant)
             }
 
             Image(

@@ -147,20 +147,20 @@ fun EditScreen(context: Context, flowerId: String, navController: NavController,
                         painter = painter,
                         contentDescription = "Captured Image",
                         modifier = Modifier
-                            .size(220.dp)
+                            .size(240.dp)
                             .align(Alignment.CenterHorizontally)
                     )
                 } else {
                     Image(
-                        painter = painterResource(id = R.drawable.a),
+                        painter = painterResource(id = R.drawable.plant),
                         contentDescription = "Logo",
                         modifier = Modifier
-                            .size(220.dp)
+                            .size(240.dp)
                             .align(Alignment.CenterHorizontally)
                     )
                 }
 
-                Spacer(modifier = Modifier.height(40.dp))
+                Spacer(modifier = Modifier.height(20.dp))
 
                 OutlinedTextField(
                     value = name.value,

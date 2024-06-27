@@ -137,7 +137,7 @@ fun PlantScreen(context: Context, flowerId: String, navController: NavController
                 val painter = if (flower.image != "") {
                     rememberImagePainter(data = flower.image)
                 } else {
-                    painterResource(id = R.drawable.a)
+                    painterResource(id = R.drawable.plant)
                 }
 
                 Image(
