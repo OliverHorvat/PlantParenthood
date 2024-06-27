@@ -63,7 +63,7 @@ class MainActivity : ComponentActivity() {
                     exitTransition = { ExitTransition.None } )
                 {
                     composable("loading_screen") {
-                        LoadingScreen(navController = navController)
+                        LoadingScreen()
                     }
                     composable("welcome_screen") {
                         WelcomeScreen(navController = navController)
