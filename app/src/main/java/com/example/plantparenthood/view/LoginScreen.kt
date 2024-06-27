@@ -1,15 +1,24 @@
 import android.content.Context
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.navigation.NavController
+import com.example.plantparenthood.R
 import com.example.plantparenthood.ui.theme.backgroundGreen
 import com.example.plantparenthood.ui.theme.buttonGreen
 import com.example.plantparenthood.utils.AuthHelper
@@ -48,24 +57,25 @@ fun LoginScreen(context: Context, navController: NavController, loginViewModel: 
                 Text("Return", fontSize = 16.sp)
             }
 
-            Spacer(modifier = Modifier.height(64.dp))
-
-            Text(
-                text = "Login",
-                color = Color.Black,
-                fontSize = 44.sp,
-                modifier = Modifier.align(Alignment.CenterHorizontally)
+            Image(
+                painter = painterResource(id = R.drawable.logo),
+                contentDescription = "Logo",
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .size(width = 360.dp, height = 340.dp)
+                    .clip(shape = RoundedCornerShape(0.dp, 0.dp, 10.dp, 10.dp))
+                    .align(Alignment.CenterHorizontally)
             )
 
-            Spacer(modifier = Modifier.height(84.dp))
-
             Text(
-                text = "Email",
+                text = "Login:",
                 fontSize = 32.sp,
-                modifier = Modifier.align(Alignment.CenterHorizontally)
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 32.dp)
             )
-
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
             OutlinedTextField(
                 value = email.value,
@@ -76,16 +86,7 @@ fun LoginScreen(context: Context, navController: NavController, loginViewModel: 
                     .padding(horizontal = 32.dp)
             )
 
-            Spacer(modifier = Modifier.height(36.dp))
-
-            Text(
-                text = "Password",
-                color = Color.Black,
-                fontSize = 32.sp,
-                modifier = Modifier.align(Alignment.CenterHorizontally)
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(18.dp))
 
             OutlinedTextField(
                 value = password.value,
@@ -97,8 +98,6 @@ fun LoginScreen(context: Context, navController: NavController, loginViewModel: 
                     .padding(horizontal = 32.dp)
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
-
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.align(Alignment.CenterHorizontally)
@@ -108,11 +107,16 @@ fun LoginScreen(context: Context, navController: NavController, loginViewModel: 
                     onCheckedChange = { stayLoggedIn.value = it }
                 )
                 Spacer(modifier = Modifier.width(8.dp))
-                Text("Remember Me", fontSize = 16.sp, color = Color.Black)
+                Text(
+                    "Remember Me",
+                    fontSize = 16.sp,
+                    color = Color.Black,
+                    modifier = Modifier.clickable {
+                        stayLoggedIn.value = !stayLoggedIn.value
+                    }
+                )
             }
-
-            Spacer(modifier = Modifier.height(52.dp))
-
+            Spacer(modifier = Modifier.height(16.dp))
             Button(
                 onClick = { loginViewModel.signIn(context, email.value, password.value, stayLoggedIn.value, navController) },
                 colors = ButtonDefaults.buttonColors(containerColor = buttonGreen),
