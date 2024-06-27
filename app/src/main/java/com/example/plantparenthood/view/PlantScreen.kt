@@ -130,7 +130,7 @@ fun PlantScreen(context: Context, flowerId: String, navController: NavController
                     modifier = Modifier.align(Alignment.CenterHorizontally)
                 )
                 Text(
-                    text = "${flower.name}",
+                    text = flower.name,
                     fontWeight = FontWeight.Bold,
                     textAlign = TextAlign.Center,
                     maxLines = 1,
