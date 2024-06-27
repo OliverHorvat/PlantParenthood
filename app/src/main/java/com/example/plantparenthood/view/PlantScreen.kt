@@ -1,12 +1,7 @@
 import android.content.Context
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -39,13 +34,13 @@ fun PlantScreen(context: Context, flowerId: String, navController: NavController
     var refreshTrigger by remember { mutableStateOf(0) }
     var daysBetweenWatering by remember { mutableIntStateOf(0) }
     val overdue = remember { mutableStateOf(false) }
-    var days = remember { mutableStateOf(0) }
-    var hours = remember { mutableStateOf(0) }
-    var minutes = remember { mutableStateOf(0) }
+    val days = remember { mutableStateOf(0) }
+    val hours = remember { mutableStateOf(0) }
+    val minutes = remember { mutableStateOf(0) }
     var isLoading by remember { mutableStateOf(true) }
-    var daysText = remember { mutableStateOf("") }
-    var minutesText = remember { mutableStateOf("") }
-    var hoursText = remember { mutableStateOf("") }
+    val daysText = remember { mutableStateOf("") }
+    val minutesText = remember { mutableStateOf("") }
+    val hoursText = remember { mutableStateOf("") }
     var flower by remember { mutableStateOf(Flower()) }
     var showDeleteDialog by remember { mutableStateOf(false) }
     var showWaterDialog by remember { mutableStateOf(false) }
@@ -54,7 +49,7 @@ fun PlantScreen(context: Context, flowerId: String, navController: NavController
 
     LaunchedEffect(refreshTrigger) {
         flower = plantViewModel.getFlowerById(context, flowerId) ?: Flower()
-        daysBetweenWatering = plantViewModel.fetchDaysBetweenWatering(context, flower!!.type)
+        daysBetweenWatering = plantViewModel.fetchDaysBetweenWatering(context, flower.type)
         isLoading = false
         while (true) {
             val (isOverdue, overdueMinutes) = plantViewModel.calculateWateringTime(

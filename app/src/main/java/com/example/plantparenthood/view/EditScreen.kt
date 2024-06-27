@@ -40,7 +40,6 @@ import androidx.compose.material3.AlertDialog
 import java.io.File
 import java.util.Objects
 import coil.compose.rememberImagePainter
-import com.airbnb.lottie.compose.LottieAnimatable
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.rememberLottieComposition

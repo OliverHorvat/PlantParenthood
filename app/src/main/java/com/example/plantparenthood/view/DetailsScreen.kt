@@ -11,6 +11,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.navigation.NavController
 import coil.compose.rememberImagePainter
@@ -60,11 +61,12 @@ fun DetailsScreen(context:Context, type: String, navController: NavController, d
                 Text(
                     text = type,
                     color = Color.Black,
+                    fontWeight = FontWeight.Bold,
                     fontSize = 44.sp,
                     modifier = Modifier.align(Alignment.CenterHorizontally)
                 )
 
-                Spacer(modifier = Modifier.height(32.dp))
+                Spacer(modifier = Modifier.height(12.dp))
 
                 Image(
                     rememberImagePainter(data = typeDetails.image),
@@ -74,7 +76,7 @@ fun DetailsScreen(context:Context, type: String, navController: NavController, d
                         .align(Alignment.CenterHorizontally)
                 )
 
-                Spacer(modifier = Modifier.height(32.dp))
+                Spacer(modifier = Modifier.height(12.dp))
 
                 Text(
                     text = typeDetails.description,
@@ -83,7 +85,7 @@ fun DetailsScreen(context:Context, type: String, navController: NavController, d
                     fontSize = 24.sp,
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(8.dp)
+                        .padding(horizontal = 32.dp)
                     )
             }
         }

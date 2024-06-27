@@ -107,7 +107,9 @@ fun ListFlowerView(item: Flower, navController: NavController, gardenViewModel: 
                 contentDescription = "Flower",
                 modifier = Modifier.size(72.dp)
             )
+
             Spacer(modifier = Modifier.width(16.dp))
+
             Text(
                 text = item.name,
                 maxLines = 1,
