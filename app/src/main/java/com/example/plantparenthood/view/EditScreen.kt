@@ -169,7 +169,8 @@ fun EditScreen(context: Context, flowerId: String, navController: NavController,
                     label = { Text("Plant's Name") },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 32.dp)
+                        .padding(horizontal = 32.dp),
+                    maxLines = 1
                 )
 
                 Spacer(modifier = Modifier.height(20.dp))
@@ -195,7 +196,7 @@ fun EditScreen(context: Context, flowerId: String, navController: NavController,
                         singleLine = true,
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         modifier = Modifier
-                            .weight(2f)
+                            .weight(1.75f)
                             .padding(horizontal = 4.dp)
                     )
                     Spacer(modifier = Modifier.width(2.dp))
@@ -368,7 +369,7 @@ fun EditScreen(context: Context, flowerId: String, navController: NavController,
             if (showDialog) {
                 AlertDialog(
                     onDismissRequest = { showDialog = false },
-                    title = { Text(text = "Select Plant Type") },
+                    title = { Text(text = "Select Plant Type:") },
                     text = {
                         LazyColumn {
                             items(plantTypes) { plantType ->

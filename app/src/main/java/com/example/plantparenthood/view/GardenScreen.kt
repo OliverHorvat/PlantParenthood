@@ -18,6 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -109,6 +110,8 @@ fun ListFlowerView(item: Flower, navController: NavController, gardenViewModel: 
             Spacer(modifier = Modifier.width(16.dp))
             Text(
                 text = item.name,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
                 fontSize = 24.sp,
                 color = Color.White
             )

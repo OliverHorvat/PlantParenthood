@@ -18,7 +18,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.navigation.NavController
 import coil.compose.rememberImagePainter
 import com.airbnb.lottie.compose.LottieAnimation
@@ -123,16 +125,26 @@ fun PlantScreen(context: Context, flowerId: String, navController: NavController
                     }
                 }
 
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(12.dp))
 
                 Text(
-                    text = "${flower.type} ${flower.name}",
+                    text = "${flower.type}:",
+                    textAlign = TextAlign.Center,
                     color = Color.Black,
-                    fontSize = 44.sp,
+                    fontSize = 32.sp,
                     modifier = Modifier.align(Alignment.CenterHorizontally)
                 )
-
-                Spacer(modifier = Modifier.height(16.dp))
+                Text(
+                    text = "${flower.name}",
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Center,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    color = Color.Black,
+                    fontSize = 36.sp,
+                    modifier = Modifier.align(Alignment.CenterHorizontally)
+                )
+                Spacer(modifier = Modifier.height(12.dp))
 
                 val painter = if (flower.image != "") {
                     rememberImagePainter(data = flower.image)
@@ -148,7 +160,7 @@ fun PlantScreen(context: Context, flowerId: String, navController: NavController
                         .align(Alignment.CenterHorizontally)
                 )
 
-                Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(12.dp))
 
                 Text(
                     text = if (overdue.value) "Watering is overdue by:" else "Watering is due in:",
@@ -163,6 +175,8 @@ fun PlantScreen(context: Context, flowerId: String, navController: NavController
                 Text(
                     text = "${daysText.value}${hoursText.value}${minutesText.value}",
                     textAlign = TextAlign.Center,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
                     color = if (overdue.value) Color.Red else Color.Black,
                     fontSize = 24.sp,
                     modifier = Modifier.align(Alignment.CenterHorizontally)
@@ -211,15 +225,17 @@ fun PlantScreen(context: Context, flowerId: String, navController: NavController
                 AlertDialog(
                     onDismissRequest = { showDeleteDialog = false },
                     title = { Text(
-                        text = "Are you sure that you want to delete ''${flower.name}''?",
-                        modifier = Modifier.padding(8.dp),
+                        text = "Are you sure that you want to delete\n''${flower.name}''?",
+                        maxLines = 4,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.padding(8.dp).fillMaxWidth(),
                         textAlign = TextAlign.Center
                     )},
                     confirmButton = {
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(20.dp),
+                                .padding(6.dp),
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
                             Button(
@@ -248,15 +264,17 @@ fun PlantScreen(context: Context, flowerId: String, navController: NavController
                 AlertDialog(
                     onDismissRequest = { showWaterDialog = false },
                     title = { Text(
-                        text = "Please confirm watering ''${flower.name}''",
-                        modifier = Modifier.padding(8.dp),
+                        text = "Confirm watering\n''${flower.name}''",
+                        maxLines = 3,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.padding(8.dp).fillMaxWidth(),
                         textAlign = TextAlign.Center
                     )},
                     confirmButton = {
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(12.dp),
+                                .padding(6.dp),
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
                             Button(

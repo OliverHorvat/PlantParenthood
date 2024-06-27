@@ -14,9 +14,6 @@ import kotlin.math.abs
 class PlantViewModel : ViewModel() {
     var type = ""
     private val db = FirebaseFirestore.getInstance()
-    private val currentUser = FirebaseAuth.getInstance().currentUser!!.uid
-    private val collectionRef = db.collection("users").document(currentUser).collection("flowers")
-
     suspend fun getFlowerById(context:Context, documentId: String): Flower? {
         try {
             val currentUser = FirebaseAuth.getInstance().currentUser!!.uid
@@ -50,6 +47,8 @@ class PlantViewModel : ViewModel() {
             "floweringTime" to newTimestamp
         )
         return try {
+            val currentUser = FirebaseAuth.getInstance().currentUser!!.uid
+            val collectionRef = db.collection("users").document(currentUser).collection("flowers")
             collectionRef.document(documentId).update(floweringTimeUpdate).await()
             Toast.makeText(context, "Watering time has been updated", Toast.LENGTH_SHORT).show()
         } catch (e: Exception) {
@@ -58,7 +57,8 @@ class PlantViewModel : ViewModel() {
     }
 
     suspend fun deleteFlowerById(context: Context, documentId: String, imageUrl: String) {
-        val documentRef = collectionRef.document(documentId)
+        val currentUser = FirebaseAuth.getInstance().currentUser!!.uid
+        val documentRef = db.collection("users").document(currentUser).collection("flowers").document(documentId)
         val documentSnapshot = documentRef.get().await()
 
         if (documentSnapshot.exists()) {
