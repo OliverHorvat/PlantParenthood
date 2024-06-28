@@ -35,7 +35,7 @@ fun LoginScreen(context: Context, navController: NavController, loginViewModel: 
 
     if(isSystemInDarkTheme()){
         backgroundColor = backgroundDark
-        buttonColor= buttonDark
+        buttonColor = buttonDark
         textColor = Color.White
     }
 

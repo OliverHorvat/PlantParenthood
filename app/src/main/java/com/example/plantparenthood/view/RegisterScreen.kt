@@ -42,7 +42,7 @@ fun RegisterScreen(context: Context, navController: NavController, registerViewM
 
     if(isSystemInDarkTheme()){
         backgroundColor = backgroundDark
-        buttonColor= buttonDark
+        buttonColor = buttonDark
         textColor = Color.White
     }
 

@@ -58,7 +58,7 @@ fun EditScreen(context: Context, flowerId: String, navController: NavController,
 
     if(isSystemInDarkTheme()){
         backgroundColor = backgroundDark
-        buttonColor= buttonDark
+        buttonColor = buttonDark
         textColor = Color.White
     }
 

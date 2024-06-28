@@ -34,7 +34,7 @@ fun DetailsScreen(context:Context, type: String, navController: NavController, d
 
     if(isSystemInDarkTheme()){
         backgroundColor = backgroundDark
-        buttonColor= buttonDark
+        buttonColor = buttonDark
         textColor = Color.White
     }
 

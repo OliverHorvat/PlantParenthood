@@ -75,5 +75,6 @@ dependencies {
 
     implementation ("io.coil-kt:coil-compose:1.4.0")
     implementation ("com.airbnb.android:lottie-compose:6.0.0")
+    implementation ("com.google.accompanist:accompanist-systemuicontroller:0.27.0")
 
 }

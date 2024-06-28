@@ -33,7 +33,7 @@ fun MainScreen(context: Context, navController: NavController, mainViewModel: Ma
 
     if(isSystemInDarkTheme()){
         backgroundColor = backgroundDark
-        buttonColor= buttonDark
+        buttonColor = buttonDark
         textColor = Color.White
     }
 

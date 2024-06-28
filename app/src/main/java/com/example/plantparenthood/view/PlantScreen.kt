@@ -28,6 +28,7 @@ import com.example.plantparenthood.ui.theme.backgroundDark
 import com.example.plantparenthood.ui.theme.backgroundLight
 import com.example.plantparenthood.ui.theme.buttonDark
 import com.example.plantparenthood.ui.theme.buttonLight
+import com.example.plantparenthood.ui.theme.lightRed
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
@@ -37,11 +38,12 @@ fun PlantScreen(context: Context, flowerId: String, navController: NavController
     var backgroundColor = backgroundLight
     var buttonColor = buttonLight
     var textColor = Color.Black
-
+    var overdueColor = Color.Red
     if(isSystemInDarkTheme()){
         backgroundColor = backgroundDark
-        buttonColor= buttonDark
+        buttonColor = buttonDark
         textColor = Color.White
+        overdueColor = lightRed
     }
 
     var refreshTrigger by remember { mutableStateOf(0) }
@@ -173,7 +175,7 @@ fun PlantScreen(context: Context, flowerId: String, navController: NavController
                 Text(
                     text = if (overdue.value) "Watering is overdue by:" else "Watering is due in:",
                     textAlign = TextAlign.Center,
-                    color = if (overdue.value) Color.Red else textColor,
+                    color = if (overdue.value) overdueColor else textColor,
                     fontSize = 24.sp,
                     modifier = Modifier.align(Alignment.CenterHorizontally)
                 )
@@ -185,7 +187,7 @@ fun PlantScreen(context: Context, flowerId: String, navController: NavController
                     textAlign = TextAlign.Center,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
-                    color = if (overdue.value) Color.Red else textColor,
+                    color = if (overdue.value) overdueColor else textColor,
                     fontSize = 24.sp,
                     modifier = Modifier.align(Alignment.CenterHorizontally)
                 )

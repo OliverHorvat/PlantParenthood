@@ -32,7 +32,7 @@ fun WelcomeScreen(navController: NavController) {
 
     if(isSystemInDarkTheme()){
         backgroundColor = backgroundDark
-        buttonColor= buttonDark
+        buttonColor = buttonDark
         textColor = Color.White
     }
     Box(

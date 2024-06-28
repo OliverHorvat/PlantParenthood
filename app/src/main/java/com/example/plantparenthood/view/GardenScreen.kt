@@ -41,7 +41,7 @@ fun GardenScreen(context: Context, navController: NavController, gardenViewModel
 
     if(isSystemInDarkTheme()){
         backgroundColor = backgroundDark
-        buttonColor= buttonDark
+        buttonColor = buttonDark
     }
 
     val itemsState = remember { mutableStateOf<List<Flower>>(emptyList()) }
