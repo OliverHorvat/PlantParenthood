@@ -22,8 +22,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.navigation.NavController
 import com.example.plantparenthood.Flower
 import com.example.plantparenthood.R
-import com.example.plantparenthood.ui.theme.backgroundGreen
-import com.example.plantparenthood.ui.theme.buttonGreen
 import com.google.firebase.Timestamp
 import java.util.Calendar
 import android.widget.Toast
@@ -33,19 +31,37 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import android.Manifest
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.TextFieldDefaults
 import java.io.File
 import java.util.Objects
 import coil.compose.rememberImagePainter
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.rememberLottieComposition
+import com.example.plantparenthood.ui.theme.backgroundDark
+import com.example.plantparenthood.ui.theme.backgroundLight
+import com.example.plantparenthood.ui.theme.buttonDark
+import com.example.plantparenthood.ui.theme.buttonLight
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditScreen(context: Context, flowerId: String, navController: NavController, editViewModel: EditViewModel) {
+    var backgroundColor = backgroundLight
+    var buttonColor = buttonLight
+    var textColor = Color.Black
+
+    if(isSystemInDarkTheme()){
+        backgroundColor = backgroundDark
+        buttonColor= buttonDark
+        textColor = Color.White
+    }
+
     val name = remember { mutableStateOf("") }
     var type by remember { mutableStateOf("") }
     var year by remember { mutableStateOf("") }
@@ -114,7 +130,7 @@ fun EditScreen(context: Context, flowerId: String, navController: NavController,
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(backgroundGreen)
+            .background(backgroundColor)
     ) {
         if(isLoading){
             LottieAnimation(modifier = Modifier.fillMaxSize(), composition = composition, speed = 3f)
@@ -126,12 +142,12 @@ fun EditScreen(context: Context, flowerId: String, navController: NavController,
             ) {
                 Button(
                     onClick = { navController.navigateUp() },
-                    colors = ButtonDefaults.buttonColors(containerColor = buttonGreen),
+                    colors = ButtonDefaults.buttonColors(containerColor = buttonColor),
                     modifier = Modifier
                         .padding(top = 16.dp, start = 16.dp)
                         .wrapContentWidth()
                 ) {
-                    Text("Return", fontSize = 16.sp)
+                    Text("Return", fontSize = 16.sp, color = Color.White)
                 }
 
                 Spacer(modifier = Modifier.height(24.dp))
@@ -163,9 +179,14 @@ fun EditScreen(context: Context, flowerId: String, navController: NavController,
 
                 OutlinedTextField(
                     value = name.value,
-
                     onValueChange = { name.value = it },
-                    label = { Text("Plant's Name") },
+                    label = { Text("Plant's Name", color = textColor) },
+                    textStyle = TextStyle(color = textColor),
+                    colors = TextFieldDefaults.outlinedTextFieldColors(
+                        focusedBorderColor = textColor,
+                        unfocusedBorderColor = textColor,
+                        cursorColor = textColor
+                    ),
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 32.dp),
@@ -178,7 +199,7 @@ fun EditScreen(context: Context, flowerId: String, navController: NavController,
                     text = "Last Watering Time:",
                     fontSize = 16.sp,
                     textAlign = TextAlign.Center,
-                    color = Color.Black,
+                    color = textColor,
                     modifier = Modifier.align(Alignment.CenterHorizontally)
                 )
 
@@ -190,10 +211,16 @@ fun EditScreen(context: Context, flowerId: String, navController: NavController,
                 ) {
                     OutlinedTextField(
                         value = year,
-                        label = { Text("YYYY", style = TextStyle(fontSize = 10.sp)) },
+                        label = { Text("YYYY", color = textColor, style = TextStyle(fontSize = 10.sp)) },
                         onValueChange = { year = it.filter { char -> char.isDigit() }.take(4) },
                         singleLine = true,
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        textStyle = TextStyle(color = textColor),
+                        colors = TextFieldDefaults.outlinedTextFieldColors(
+                            focusedBorderColor = textColor,
+                            unfocusedBorderColor = textColor,
+                            cursorColor = textColor
+                        ),
                         modifier = Modifier
                             .weight(1.75f)
                             .padding(horizontal = 4.dp)
@@ -201,10 +228,16 @@ fun EditScreen(context: Context, flowerId: String, navController: NavController,
                     Spacer(modifier = Modifier.width(2.dp))
                     OutlinedTextField(
                         value = month,
-                        label = { Text(text = "MM", style = TextStyle(fontSize = 10.sp)) },
+                        label = { Text(text = "MM", color = textColor, style = TextStyle(fontSize = 10.sp)) },
                         onValueChange = { month = it.filter { char -> char.isDigit() }.take(2) },
                         singleLine = true,
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        textStyle = TextStyle(color = textColor),
+                        colors = TextFieldDefaults.outlinedTextFieldColors(
+                            focusedBorderColor = textColor,
+                            unfocusedBorderColor = textColor,
+                            cursorColor = textColor
+                        ),
                         modifier = Modifier
                             .weight(1f)
                             .padding(horizontal = 4.dp)
@@ -212,10 +245,16 @@ fun EditScreen(context: Context, flowerId: String, navController: NavController,
                     Spacer(modifier = Modifier.width(2.dp))
                     OutlinedTextField(
                         value = day,
-                        label = { Text("DD", style = TextStyle(fontSize = 10.sp)) },
+                        label = { Text("DD", color = textColor, style = TextStyle(fontSize = 10.sp)) },
                         onValueChange = { day = it.filter { char -> char.isDigit() }.take(2) },
                         singleLine = true,
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        textStyle = TextStyle(color = textColor),
+                        colors = TextFieldDefaults.outlinedTextFieldColors(
+                            focusedBorderColor = textColor,
+                            unfocusedBorderColor = textColor,
+                            cursorColor = textColor
+                        ),
                         modifier = Modifier
                             .weight(1f)
                             .padding(horizontal = 4.dp)
@@ -223,10 +262,16 @@ fun EditScreen(context: Context, flowerId: String, navController: NavController,
                     Spacer(modifier = Modifier.width(2.dp))
                     OutlinedTextField(
                         value = hour,
-                        label = { Text("HH", style = TextStyle(fontSize = 10.sp)) },
+                        label = { Text("HH", color = textColor, style = TextStyle(fontSize = 10.sp)) },
                         onValueChange = { hour = it.filter { char -> char.isDigit() }.take(2) },
                         singleLine = true,
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        textStyle = TextStyle(color = textColor),
+                        colors = TextFieldDefaults.outlinedTextFieldColors(
+                            focusedBorderColor = textColor,
+                            unfocusedBorderColor = textColor,
+                            cursorColor = textColor
+                        ),
                         modifier = Modifier
                             .weight(1f)
                             .padding(horizontal = 4.dp)
@@ -234,10 +279,16 @@ fun EditScreen(context: Context, flowerId: String, navController: NavController,
                     Spacer(modifier = Modifier.width(2.dp))
                     OutlinedTextField(
                         value = minute,
-                        label = { Text("mm", style = TextStyle(fontSize = 10.sp)) },
+                        label = { Text("mm", color = textColor, style = TextStyle(fontSize = 10.sp)) },
                         onValueChange = { minute = it.filter { char -> char.isDigit() }.take(2) },
                         singleLine = true,
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        textStyle = TextStyle(color = textColor),
+                        colors = TextFieldDefaults.outlinedTextFieldColors(
+                            focusedBorderColor = textColor,
+                            unfocusedBorderColor = textColor,
+                            cursorColor = textColor
+                        ),
                         modifier = Modifier
                             .weight(1f)
                             .padding(horizontal = 4.dp)
@@ -257,26 +308,26 @@ fun EditScreen(context: Context, flowerId: String, navController: NavController,
                             permissionLauncher.launch(Manifest.permission.CAMERA)
                         }
                     },
-                    colors = ButtonDefaults.buttonColors(containerColor = buttonGreen),
+                    colors = ButtonDefaults.buttonColors(containerColor = buttonColor),
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 32.dp)
                         .height(48.dp)
                 ) {
-                    Text("Take a Picture", fontSize = 16.sp)
+                    Text("Take a Picture", fontSize = 16.sp, color = Color.White)
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
 
                 Button(
                     onClick = { showDialog = true },
-                    colors = ButtonDefaults.buttonColors(containerColor = buttonGreen),
+                    colors = ButtonDefaults.buttonColors(containerColor = buttonColor),
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 32.dp)
                         .height(48.dp)
                 ) {
-                    Text("Select Plant Type", fontSize = 16.sp)
+                    Text("Select Plant Type", fontSize = 16.sp, color = Color.White)
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
@@ -356,19 +407,20 @@ fun EditScreen(context: Context, flowerId: String, navController: NavController,
                                 .show()
                         }
                     },
-                    colors = ButtonDefaults.buttonColors(containerColor = buttonGreen),
+                    colors = ButtonDefaults.buttonColors(containerColor = buttonColor),
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 32.dp)
                         .height(48.dp)
                 ) {
-                    Text("Save", fontSize = 16.sp)
+                    Text("Save", fontSize = 16.sp, color = Color.White)
                 }
             }
             if (showDialog) {
                 AlertDialog(
                     onDismissRequest = { showDialog = false },
-                    title = { Text(text = "Select Plant Type:") },
+                    title = { Text(text = "Select Plant Type:", color = textColor) },
+                    containerColor = backgroundColor,
                     text = {
                         LazyColumn {
                             items(plantTypes) { plantType ->
@@ -381,7 +433,7 @@ fun EditScreen(context: Context, flowerId: String, navController: NavController,
                                             showDialog = false
                                         }
                                         .background(
-                                            color = buttonGreen,
+                                            color = buttonColor,
                                             shape = RoundedCornerShape(16.dp)
                                         )
                                         .padding(16.dp)
@@ -398,9 +450,9 @@ fun EditScreen(context: Context, flowerId: String, navController: NavController,
                     confirmButton = {
                         Button(
                             onClick = { showDialog = false },
-                            colors = ButtonDefaults.buttonColors(containerColor = buttonGreen)
+                            colors = ButtonDefaults.buttonColors(containerColor = buttonColor)
                         ) {
-                            Text("Close")
+                            Text("Close", color = Color.White)
                         }
                     }
                 )

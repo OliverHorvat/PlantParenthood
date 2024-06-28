@@ -1,6 +1,7 @@
 import android.content.Context
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -20,11 +21,23 @@ import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.example.plantparenthood.FlowerTypeModel
 import com.example.plantparenthood.R
-import com.example.plantparenthood.ui.theme.backgroundGreen
-import com.example.plantparenthood.ui.theme.buttonGreen
+import com.example.plantparenthood.ui.theme.backgroundDark
+import com.example.plantparenthood.ui.theme.backgroundLight
+import com.example.plantparenthood.ui.theme.buttonDark
+import com.example.plantparenthood.ui.theme.buttonLight
 
 @Composable
 fun DetailsScreen(context:Context, type: String, navController: NavController, detailsViewModel: DetailsViewModel) {
+    var backgroundColor = backgroundLight
+    var buttonColor = buttonLight
+    var textColor = Color.Black
+
+    if(isSystemInDarkTheme()){
+        backgroundColor = backgroundDark
+        buttonColor= buttonDark
+        textColor = Color.White
+    }
+
     var typeDetails by remember { mutableStateOf(FlowerTypeModel()) }
     var isLoading by remember { mutableStateOf(true) }
     val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.load))
@@ -36,7 +49,7 @@ fun DetailsScreen(context:Context, type: String, navController: NavController, d
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(backgroundGreen)
+            .background(backgroundColor)
     ) {
         Column(
             modifier = Modifier
@@ -48,19 +61,19 @@ fun DetailsScreen(context:Context, type: String, navController: NavController, d
             } else {
                 Button(
                 onClick = { navController.navigateUp() },
-                colors = ButtonDefaults.buttonColors(containerColor = buttonGreen),
+                colors = ButtonDefaults.buttonColors(containerColor = buttonColor),
                 modifier = Modifier
                     .padding(top = 16.dp, start = 16.dp)
                     .wrapContentWidth()
                 ) {
-                    Text("Return", fontSize = 16.sp)
+                    Text("Return", fontSize = 16.sp, color = Color.White)
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
 
                 Text(
                     text = type,
-                    color = Color.Black,
+                    color = textColor,
                     fontWeight = FontWeight.Bold,
                     fontSize = 44.sp,
                     modifier = Modifier.align(Alignment.CenterHorizontally)
@@ -81,7 +94,7 @@ fun DetailsScreen(context:Context, type: String, navController: NavController, d
                 Text(
                     text = typeDetails.description,
                     textAlign = TextAlign.Left,
-                    color = Color.Black,
+                    color = textColor,
                     fontSize = 24.sp,
                     modifier = Modifier
                         .fillMaxSize()

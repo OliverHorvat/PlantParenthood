@@ -2,6 +2,7 @@ import android.content.Context
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -15,15 +16,29 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.navigation.NavController
 import com.example.plantparenthood.R
-import com.example.plantparenthood.ui.theme.backgroundGreen
-import com.example.plantparenthood.ui.theme.buttonGreen
+import com.example.plantparenthood.ui.theme.backgroundDark
+import com.example.plantparenthood.ui.theme.backgroundLight
+import com.example.plantparenthood.ui.theme.buttonDark
+import com.example.plantparenthood.ui.theme.buttonLight
 import com.example.plantparenthood.utils.AuthHelper
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen(context: Context, navController: NavController, loginViewModel: LoginViewModel) {
+    var backgroundColor = backgroundLight
+    var buttonColor = buttonLight
+    var textColor = Color.Black
+
+    if(isSystemInDarkTheme()){
+        backgroundColor = backgroundDark
+        buttonColor= buttonDark
+        textColor = Color.White
+    }
+
     val email = remember { mutableStateOf("") }
     val password = remember { mutableStateOf("") }
     val stayLoggedIn = remember { mutableStateOf(AuthHelper.isRememberMeChecked(context)) }
@@ -39,7 +54,7 @@ fun LoginScreen(context: Context, navController: NavController, loginViewModel: 
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(backgroundGreen)
+            .background(backgroundColor)
     ) {
         Column(
             modifier = Modifier
@@ -48,16 +63,16 @@ fun LoginScreen(context: Context, navController: NavController, loginViewModel: 
         ) {
             Button(
                 onClick = { navController.navigate("welcome_screen") },
-                colors = ButtonDefaults.buttonColors(containerColor = buttonGreen),
+                colors = ButtonDefaults.buttonColors(containerColor = buttonColor),
                 modifier = Modifier
                     .padding(top = 16.dp, start = 16.dp)
                     .wrapContentWidth()
             ) {
-                Text("Return", fontSize = 16.sp)
+                Text("Return", fontSize = 16.sp, color = Color.White)
             }
 
             Image(
-                painter = painterResource(id = R.drawable.logo),
+                painter = painterResource(id = R.drawable.logo_transparent),
                 contentDescription = "Logo",
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
@@ -70,6 +85,7 @@ fun LoginScreen(context: Context, navController: NavController, loginViewModel: 
                 text = "Login:",
                 fontSize = 32.sp,
                 fontWeight = FontWeight.Bold,
+                color = textColor,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 32.dp)
@@ -79,7 +95,13 @@ fun LoginScreen(context: Context, navController: NavController, loginViewModel: 
             OutlinedTextField(
                 value = email.value,
                 onValueChange = { email.value = it },
-                label = { Text("Email") },
+                label = { Text("Email", color = textColor) },
+                textStyle = TextStyle(color = textColor),
+                colors = TextFieldDefaults.outlinedTextFieldColors(
+                    focusedBorderColor = textColor,
+                    unfocusedBorderColor = textColor,
+                    cursorColor = textColor
+                ),
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 32.dp)
@@ -90,8 +112,14 @@ fun LoginScreen(context: Context, navController: NavController, loginViewModel: 
             OutlinedTextField(
                 value = password.value,
                 onValueChange = { password.value = it },
-                label = { Text("Password") },
+                label = { Text("Password", color = textColor) },
                 visualTransformation = PasswordVisualTransformation(),
+                textStyle = TextStyle(color = textColor),
+                colors = TextFieldDefaults.outlinedTextFieldColors(
+                    focusedBorderColor = textColor,
+                    unfocusedBorderColor = textColor,
+                    cursorColor = textColor
+                ),
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 32.dp)
@@ -103,13 +131,18 @@ fun LoginScreen(context: Context, navController: NavController, loginViewModel: 
             ) {
                 Checkbox(
                     checked = stayLoggedIn.value,
-                    onCheckedChange = { stayLoggedIn.value = it }
+                    onCheckedChange = { stayLoggedIn.value = it },
+                    colors = CheckboxDefaults.colors(
+                        uncheckedColor = textColor,
+                        checkedColor = buttonColor,
+                        checkmarkColor = textColor
+                    ),
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
                     "Remember Me",
                     fontSize = 16.sp,
-                    color = Color.Black,
+                    color = textColor,
                     modifier = Modifier.clickable {
                         stayLoggedIn.value = !stayLoggedIn.value
                     }
@@ -118,13 +151,13 @@ fun LoginScreen(context: Context, navController: NavController, loginViewModel: 
             Spacer(modifier = Modifier.height(16.dp))
             Button(
                 onClick = { loginViewModel.signIn(context, email.value, password.value, stayLoggedIn.value, navController) },
-                colors = ButtonDefaults.buttonColors(containerColor = buttonGreen),
+                colors = ButtonDefaults.buttonColors(containerColor = buttonColor),
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 32.dp)
                     .height(48.dp)
             ) {
-                Text("Login", fontSize = 16.sp)
+                Text("Login", fontSize = 16.sp, color = Color.White)
             }
         }
     }

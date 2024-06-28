@@ -2,6 +2,7 @@ import android.content.Context
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -27,12 +28,22 @@ import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.example.plantparenthood.Flower
-import com.example.plantparenthood.ui.theme.backgroundGreen
-import com.example.plantparenthood.ui.theme.buttonGreen
 import com.example.plantparenthood.R
+import com.example.plantparenthood.ui.theme.backgroundDark
+import com.example.plantparenthood.ui.theme.backgroundLight
+import com.example.plantparenthood.ui.theme.buttonDark
+import com.example.plantparenthood.ui.theme.buttonLight
 
 @Composable
 fun GardenScreen(context: Context, navController: NavController, gardenViewModel: GardenViewModel) {
+    var backgroundColor = backgroundLight
+    var buttonColor = buttonLight
+
+    if(isSystemInDarkTheme()){
+        backgroundColor = backgroundDark
+        buttonColor= buttonDark
+    }
+
     val itemsState = remember { mutableStateOf<List<Flower>>(emptyList()) }
     var isLoading by remember { mutableStateOf(true) }
     val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.load))
@@ -50,7 +61,7 @@ fun GardenScreen(context: Context, navController: NavController, gardenViewModel
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(backgroundGreen)
+                .background(backgroundColor)
         ) {
             Column {
                 if(isLoading){
@@ -58,14 +69,14 @@ fun GardenScreen(context: Context, navController: NavController, gardenViewModel
                 } else {
                     Button(
                         onClick = { navController.navigate("main_screen") },
-                        colors = ButtonDefaults.buttonColors(containerColor = buttonGreen),
+                        colors = ButtonDefaults.buttonColors(containerColor = buttonColor),
                         modifier = Modifier
                             .padding(top = 16.dp, start = 16.dp, bottom = 16.dp)
                             .wrapContentWidth()
                     ) {
-                        Text("Return", fontSize = 16.sp)
+                        Text("Return", fontSize = 16.sp, color = Color.White)
                     }
-                    RecyclerView(itemsState.value, navController, gardenViewModel)
+                    RecyclerView(itemsState.value, navController, gardenViewModel, buttonColor)
                 }
             }
         }
@@ -73,22 +84,22 @@ fun GardenScreen(context: Context, navController: NavController, gardenViewModel
 }
 
 @Composable
-fun RecyclerView(items: List<Flower>, navController: NavController, gardenViewModel: GardenViewModel) {
+fun RecyclerView(items: List<Flower>, navController: NavController, gardenViewModel: GardenViewModel, buttonColor: Color) {
     LazyColumn {
         items(items) { item ->
-            ListFlowerView(item = item, navController, gardenViewModel)
+            ListFlowerView(item = item, navController, gardenViewModel, buttonColor)
         }
     }
 }
 
 @Composable
-fun ListFlowerView(item: Flower, navController: NavController, gardenViewModel: GardenViewModel) {
+fun ListFlowerView(item: Flower, navController: NavController, gardenViewModel: GardenViewModel, buttonColor: Color) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(8.dp)
+            .padding(horizontal = 12.dp, vertical = 8.dp)
             .clickable { gardenViewModel.goToFlower(item, navController) }
-            .background(buttonGreen)
+            .background(buttonColor)
     ) {
         Row(
             modifier = Modifier

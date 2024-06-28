@@ -1,6 +1,7 @@
 import android.content.Context
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -23,14 +24,26 @@ import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.example.plantparenthood.Flower
 import com.example.plantparenthood.R
-import com.example.plantparenthood.ui.theme.backgroundGreen
-import com.example.plantparenthood.ui.theme.buttonGreen
+import com.example.plantparenthood.ui.theme.backgroundDark
+import com.example.plantparenthood.ui.theme.backgroundLight
+import com.example.plantparenthood.ui.theme.buttonDark
+import com.example.plantparenthood.ui.theme.buttonLight
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
 
 @Composable
 fun PlantScreen(context: Context, flowerId: String, navController: NavController, plantViewModel: PlantViewModel) {
+    var backgroundColor = backgroundLight
+    var buttonColor = buttonLight
+    var textColor = Color.Black
+
+    if(isSystemInDarkTheme()){
+        backgroundColor = backgroundDark
+        buttonColor= buttonDark
+        textColor = Color.White
+    }
+
     var refreshTrigger by remember { mutableStateOf(0) }
     var daysBetweenWatering by remember { mutableIntStateOf(0) }
     val overdue = remember { mutableStateOf(false) }
@@ -86,7 +99,7 @@ fun PlantScreen(context: Context, flowerId: String, navController: NavController
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(backgroundGreen)
+            .background(backgroundColor)
     ) {
         if(isLoading){
             LottieAnimation(modifier = Modifier.fillMaxSize(), composition = composition, speed = 3f)
@@ -103,20 +116,20 @@ fun PlantScreen(context: Context, flowerId: String, navController: NavController
                 ) {
                     Button(
                         onClick = { navController.navigate("garden_screen") },
-                        colors = ButtonDefaults.buttonColors(containerColor = buttonGreen),
+                        colors = ButtonDefaults.buttonColors(containerColor = buttonColor),
                         modifier = Modifier
                             .padding(top = 16.dp, start = 16.dp)
                     ) {
-                        Text("Return", fontSize = 16.sp)
+                        Text("Return", fontSize = 16.sp, color = Color.White)
                     }
 
                     Button(
                         onClick = { showDeleteDialog = true },
-                        colors = ButtonDefaults.buttonColors(containerColor = buttonGreen),
+                        colors = ButtonDefaults.buttonColors(containerColor = buttonColor),
                         modifier = Modifier
                             .padding(top = 16.dp, end = 16.dp)
                     ) {
-                        Text("Delete", fontSize = 16.sp)
+                        Text("Delete", fontSize = 16.sp, color = Color.White)
                     }
                 }
 
@@ -125,7 +138,7 @@ fun PlantScreen(context: Context, flowerId: String, navController: NavController
                 Text(
                     text = "${flower.type}:",
                     textAlign = TextAlign.Center,
-                    color = Color.Black,
+                    color = textColor,
                     fontSize = 32.sp,
                     modifier = Modifier.align(Alignment.CenterHorizontally)
                 )
@@ -135,7 +148,7 @@ fun PlantScreen(context: Context, flowerId: String, navController: NavController
                     textAlign = TextAlign.Center,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
-                    color = Color.Black,
+                    color = textColor,
                     fontSize = 36.sp,
                     modifier = Modifier.align(Alignment.CenterHorizontally)
                 )
@@ -160,7 +173,7 @@ fun PlantScreen(context: Context, flowerId: String, navController: NavController
                 Text(
                     text = if (overdue.value) "Watering is overdue by:" else "Watering is due in:",
                     textAlign = TextAlign.Center,
-                    color = if (overdue.value) Color.Red else Color.Black,
+                    color = if (overdue.value) Color.Red else textColor,
                     fontSize = 24.sp,
                     modifier = Modifier.align(Alignment.CenterHorizontally)
                 )
@@ -172,7 +185,7 @@ fun PlantScreen(context: Context, flowerId: String, navController: NavController
                     textAlign = TextAlign.Center,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
-                    color = if (overdue.value) Color.Red else Color.Black,
+                    color = if (overdue.value) Color.Red else textColor,
                     fontSize = 24.sp,
                     modifier = Modifier.align(Alignment.CenterHorizontally)
                 )
@@ -181,50 +194,52 @@ fun PlantScreen(context: Context, flowerId: String, navController: NavController
 
                 Button(
                     onClick = { showWaterDialog = true },
-                    colors = ButtonDefaults.buttonColors(containerColor = buttonGreen),
+                    colors = ButtonDefaults.buttonColors(containerColor = buttonColor),
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 32.dp)
                         .height(48.dp)
                 ) {
-                    Text("Water Me", fontSize = 16.sp)
+                    Text("Water Me", fontSize = 16.sp, color = Color.White)
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
 
                 Button(
                     onClick = { navController.navigate("edit_screen") },
-                    colors = ButtonDefaults.buttonColors(containerColor = buttonGreen),
+                    colors = ButtonDefaults.buttonColors(containerColor = buttonColor),
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 32.dp)
                         .height(48.dp)
                 ) {
-                    Text("Edit Me", fontSize = 16.sp)
+                    Text("Edit Me", fontSize = 16.sp, color = Color.White)
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
 
                 Button(
                     onClick = { navController.navigate("details_screen") },
-                    colors = ButtonDefaults.buttonColors(containerColor = buttonGreen),
+                    colors = ButtonDefaults.buttonColors(containerColor = buttonColor),
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 32.dp)
                         .height(48.dp)
                 ) {
-                    Text("Type Details", fontSize = 16.sp)
+                    Text("Type Details", fontSize = 16.sp, color = Color.White)
                 }
             }
             if (showDeleteDialog) {
                 AlertDialog(
                     onDismissRequest = { showDeleteDialog = false },
+                    containerColor = backgroundColor,
                     title = { Text(
                         text = "Are you sure that you want to delete\n''${flower.name}''?",
                         maxLines = 4,
                         overflow = TextOverflow.Ellipsis,
                         modifier = Modifier.padding(8.dp).fillMaxWidth(),
-                        textAlign = TextAlign.Center
+                        textAlign = TextAlign.Center,
+                        color = textColor
                     )},
                     confirmButton = {
                         Row(
@@ -240,16 +255,16 @@ fun PlantScreen(context: Context, flowerId: String, navController: NavController
                                         showDeleteDialog = false
                                         navController.navigate("garden_screen")
                                     } },
-                                colors = ButtonDefaults.buttonColors(containerColor = buttonGreen)
+                                colors = ButtonDefaults.buttonColors(containerColor = buttonColor)
                             ) {
-                                Text("Yes", fontSize = 18.sp)
+                                Text("Yes", fontSize = 18.sp, color = Color.White)
                             }
 
                             Button(
                                 onClick = { showDeleteDialog = false },
-                                colors = ButtonDefaults.buttonColors(containerColor = buttonGreen)
+                                colors = ButtonDefaults.buttonColors(containerColor = buttonColor)
                             ) {
-                                Text("No", fontSize = 18.sp)
+                                Text("No", fontSize = 18.sp, color = Color.White)
                             }
                         }
                     }
@@ -258,12 +273,14 @@ fun PlantScreen(context: Context, flowerId: String, navController: NavController
             if (showWaterDialog) {
                 AlertDialog(
                     onDismissRequest = { showWaterDialog = false },
+                    containerColor = backgroundColor,
                     title = { Text(
                         text = "Confirm watering\n''${flower.name}''",
                         maxLines = 3,
                         overflow = TextOverflow.Ellipsis,
                         modifier = Modifier.padding(8.dp).fillMaxWidth(),
-                        textAlign = TextAlign.Center
+                        textAlign = TextAlign.Center,
+                        color = textColor
                     )},
                     confirmButton = {
                         Row(
@@ -279,16 +296,16 @@ fun PlantScreen(context: Context, flowerId: String, navController: NavController
                                         showWaterDialog = false
                                         refreshTrigger++
                                     }},
-                                colors = ButtonDefaults.buttonColors(containerColor = buttonGreen)
+                                colors = ButtonDefaults.buttonColors(containerColor = buttonColor)
                             ) {
-                                Text("Confirm", fontSize = 18.sp)
+                                Text("Confirm", fontSize = 18.sp, color = Color.White)
                             }
 
                             Button(
                                 onClick = { showWaterDialog = false },
-                                colors = ButtonDefaults.buttonColors(containerColor = buttonGreen)
+                                colors = ButtonDefaults.buttonColors(containerColor = buttonColor)
                             ) {
-                                Text("Dismiss", fontSize = 18.sp)
+                                Text("Dismiss", fontSize = 18.sp, color = Color.White)
                             }
                         }
                     }

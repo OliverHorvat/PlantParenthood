@@ -1,5 +1,6 @@
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
@@ -18,15 +19,26 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.plantparenthood.R
-import com.example.plantparenthood.ui.theme.backgroundGreen
-import com.example.plantparenthood.ui.theme.buttonGreen
+import com.example.plantparenthood.ui.theme.backgroundDark
+import com.example.plantparenthood.ui.theme.backgroundLight
+import com.example.plantparenthood.ui.theme.buttonDark
+import com.example.plantparenthood.ui.theme.buttonLight
 
 @Composable
 fun WelcomeScreen(navController: NavController) {
+    var backgroundColor = backgroundLight
+    var buttonColor = buttonLight
+    var textColor = Color.Black
+
+    if(isSystemInDarkTheme()){
+        backgroundColor = backgroundDark
+        buttonColor= buttonDark
+        textColor = Color.White
+    }
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(backgroundGreen)
+            .background(backgroundColor)
     ) {
         Column(
             modifier = Modifier
@@ -37,7 +49,7 @@ fun WelcomeScreen(navController: NavController) {
             Spacer(modifier = Modifier.height(64.dp))
 
             Image(
-                painter = painterResource(id = R.drawable.logo),
+                painter = painterResource(id = R.drawable.logo_transparent),
                 contentDescription = "Logo",
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
@@ -48,7 +60,7 @@ fun WelcomeScreen(navController: NavController) {
             Text(
                 text = "Plant Parenthood",
                 textAlign = TextAlign.Center,
-                color = Color.Black,
+                color = textColor,
                 fontWeight = FontWeight.Bold,
                 fontSize = 40.sp,
                 modifier = Modifier.align(Alignment.CenterHorizontally)
@@ -58,26 +70,26 @@ fun WelcomeScreen(navController: NavController) {
 
             Button(
                 onClick = { navController.navigate("login_screen") },
-                colors = ButtonDefaults.buttonColors(containerColor = buttonGreen),
+                colors = ButtonDefaults.buttonColors(containerColor = buttonColor),
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 32.dp)
                     .height(48.dp)
             ) {
-                Text("Login", fontSize = 16.sp)
+                Text("Login", fontSize = 16.sp, color = Color.White)
             }
 
             Spacer(modifier = Modifier.height(16.dp))
 
             Button(
                 onClick = { navController.navigate("register_screen") },
-                colors = ButtonDefaults.buttonColors(containerColor = buttonGreen),
+                colors = ButtonDefaults.buttonColors(containerColor = buttonColor),
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 32.dp)
                     .height(48.dp)
             ) {
-                Text("Register", fontSize = 16.sp)
+                Text("Register", fontSize = 16.sp, color = Color.White)
             }
         }
     }
