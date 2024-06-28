@@ -44,7 +44,7 @@ class MainActivity : ComponentActivity() {
                 var startDestination by remember { mutableStateOf("loading_screen") }
                 var gardenViewModel: GardenViewModel = viewModel()
                 var plantViewModel: PlantViewModel = viewModel()
-
+                var notificationPlantId = ""
                 LaunchedEffect(Unit) {
                     val (savedEmail, savedPassword) = AuthHelper.loadCredentials(this@MainActivity)
                     val isRememberMeChecked = AuthHelper.isRememberMeChecked(this@MainActivity)
@@ -54,6 +54,14 @@ class MainActivity : ComponentActivity() {
                         startDestination = "main_screen"
                     } else {
                         startDestination = "welcome_screen"
+                    }
+                }
+                intent?.let { intent ->
+                    if (intent.getBooleanExtra("notification", false)) {
+                        if (!intent.getStringExtra("plantId").isNullOrEmpty()) {
+                            startDestination = "plant_notification_screen"
+                            notificationPlantId = intent.getStringExtra("plantId")!!
+                        }
                     }
                 }
                 NavHost(
@@ -83,6 +91,11 @@ class MainActivity : ComponentActivity() {
                     }
                     composable("plant_screen") {
                         plantViewModel = viewModel()
+                        PlantScreen(context = this@MainActivity, plantId = gardenViewModel.screenPlantId, navController = navController, plantViewModel = plantViewModel)
+                    }
+                    composable("plant_notification_screen") {
+                        plantViewModel = viewModel()
+                        gardenViewModel.screenPlantId = notificationPlantId
                         PlantScreen(context = this@MainActivity, plantId = gardenViewModel.screenPlantId, navController = navController, plantViewModel = plantViewModel)
                     }
                     composable("details_screen") {
