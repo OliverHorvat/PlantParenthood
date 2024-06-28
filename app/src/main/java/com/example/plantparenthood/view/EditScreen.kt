@@ -85,6 +85,7 @@ fun EditScreen(context: Context, plantId: String, navController: NavController, 
             name.value = plant.name
             type = plant.type
             ownerId = plant.ownerId
+            plant.documentId = plantId
             val calendar = Calendar.getInstance()
             calendar.time = plant.wateringTime.toDate()
             year = calendar.get(Calendar.YEAR).toString()
@@ -92,6 +93,7 @@ fun EditScreen(context: Context, plantId: String, navController: NavController, 
             day = calendar.get(Calendar.DAY_OF_MONTH).toString()
             hour = calendar.get(Calendar.HOUR_OF_DAY).toString()
             minute = calendar.get(Calendar.MINUTE).toString()
+
             if (plant.image != "") {
                 imageCaptured = true
             }
@@ -363,23 +365,20 @@ fun EditScreen(context: Context, plantId: String, navController: NavController, 
                                 name = name.value,
                                 wateringTime = wateringTime,
                                 type = type,
-                                ownerId = ownerId
+                                ownerId = ownerId,
+                                documentId = plant.documentId
                             )
                             if (plant.documentId != "") {
 
                                 if (capturedImageUri == Uri.EMPTY) {
                                     newPlant.image = plant.image
-                                    editViewModel.editPlant(context, plant.documentId, newPlant)
+                                    editViewModel.editPlant(context, newPlant)
                                     navController.navigate("plant_screen")
                                 } else {
                                     editViewModel.uploadImageToFirebase(capturedImageUri,
                                         onSuccess = { downloadUrl ->
                                             newPlant.image = downloadUrl
-                                            editViewModel.editPlant(
-                                                context,
-                                                plant.documentId,
-                                                newPlant
-                                            )
+                                            editViewModel.editPlant(context, newPlant)
                                             editViewModel.deleteImageFromFirebase(plant.image)
                                             navController.navigate("plant_screen")
                                         },

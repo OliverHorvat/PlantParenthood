@@ -48,13 +48,14 @@ class PlantViewModel : ViewModel() {
         val wateringTimeUpdate = mapOf(
             "wateringTime" to newTimestamp
         )
+        plant.wateringTime = newTimestamp
         return try {
             val currentUser = FirebaseAuth.getInstance().currentUser!!.uid
             val collectionRef = db.collection("users").document(currentUser).collection("plants")
             collectionRef.document(plant.documentId).update(wateringTimeUpdate).await()
-            Toast.makeText(context, "Watering time has been updated", Toast.LENGTH_SHORT).show()
             NotificationUtils.cancelNotification(context, plant.documentId)
             NotificationUtils.scheduleNotification(context, plant, daysBetweenWatering)
+            Toast.makeText(context, "Watering time has been updated", Toast.LENGTH_SHORT).show()
         } catch (e: Exception) {
             Toast.makeText(context, "Failed to update watering time", Toast.LENGTH_SHORT).show()
         }

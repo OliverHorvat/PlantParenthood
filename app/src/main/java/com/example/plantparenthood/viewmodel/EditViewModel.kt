@@ -42,7 +42,6 @@ class EditViewModel : ViewModel() {
                     name = name,
                     type = type,
                     wateringTime = wateringTime,
-                    documentId = documentSnapshot.id,
                     ownerId = currentUser
                 )
             }
@@ -60,12 +59,12 @@ class EditViewModel : ViewModel() {
                 collectionRef.document(documentReference.id).set(updatedPlant)
                     .addOnSuccessListener {
                         viewModelScope.launch {
-                            Toast.makeText(context, "${plant.name} has been added to your garden", Toast.LENGTH_SHORT).show()
-                            NotificationUtils.scheduleNotification(context, updatedPlant, fetchDaysBetweenWatering(context, plant.type))
+                            Toast.makeText(context, "${updatedPlant.name} has been added to your garden", Toast.LENGTH_SHORT).show()
+                            NotificationUtils.scheduleNotification(context, updatedPlant, fetchDaysBetweenWatering(context, updatedPlant.type))
                         }
                     }
                     .addOnFailureListener {
-                        Toast.makeText(context, "${plant.name} is not properly added to garden", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "${updatedPlant.name} is not properly added to garden", Toast.LENGTH_SHORT).show()
                     }
             }
             .addOnFailureListener {
@@ -73,8 +72,8 @@ class EditViewModel : ViewModel() {
             }
     }
 
-    fun editPlant(context: Context, documentId: String, plant: Plant) {
-        collectionRef.document(documentId).set(plant)
+    fun editPlant(context: Context, plant: Plant) {
+        collectionRef.document(plant.documentId).set(plant)
             .addOnSuccessListener {
                 viewModelScope.launch {
                     Toast.makeText(context, "${plant.name} has been updated in your garden", Toast.LENGTH_SHORT).show()
@@ -124,7 +123,7 @@ class EditViewModel : ViewModel() {
         }
     }
 
-    suspend fun fetchDaysBetweenWatering(context: Context, plantType: String): Int {
+    private suspend fun fetchDaysBetweenWatering(context: Context, plantType: String): Int {
         var daysBetweenWatering = 0
         val daysBetweenWateringDocRef = db.collection("plantType").document(plantType)
 
