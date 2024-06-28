@@ -3,6 +3,7 @@ import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import com.example.plantparenthood.Plant
+import com.example.plantparenthood.utils.NotificationUtils
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -30,7 +31,8 @@ class PlantViewModel : ViewModel() {
                     name = name,
                     type = type,
                     wateringTime = wateringTime,
-                    documentId = documentSnapshot.id
+                    documentId = documentSnapshot.id,
+                    ownerId = currentUser
                 )
             }
         } catch (e: Exception) {
@@ -40,7 +42,7 @@ class PlantViewModel : ViewModel() {
         return null
     }
 
-    suspend fun updateWateringTime(context: Context, documentId: String) {
+    suspend fun updateWateringTime(context: Context, plant: Plant, daysBetweenWatering: Int) {
 
         val newTimestamp = Timestamp.now()
         val wateringTimeUpdate = mapOf(
@@ -49,8 +51,10 @@ class PlantViewModel : ViewModel() {
         return try {
             val currentUser = FirebaseAuth.getInstance().currentUser!!.uid
             val collectionRef = db.collection("users").document(currentUser).collection("plants")
-            collectionRef.document(documentId).update(wateringTimeUpdate).await()
+            collectionRef.document(plant.documentId).update(wateringTimeUpdate).await()
             Toast.makeText(context, "Watering time has been updated", Toast.LENGTH_SHORT).show()
+            NotificationUtils.cancelNotification(context, plant.documentId)
+            NotificationUtils.scheduleNotification(context, plant, daysBetweenWatering)
         } catch (e: Exception) {
             Toast.makeText(context, "Failed to update watering time", Toast.LENGTH_SHORT).show()
         }

@@ -7,5 +7,6 @@ data class Plant(
     var name: String = "",
     var type: String = "",
     var wateringTime: Timestamp = Timestamp(0,0),
-    var documentId: String = ""
+    var documentId: String = "",
+    var ownerId: String = ""
     )

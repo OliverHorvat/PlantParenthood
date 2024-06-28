@@ -294,7 +294,7 @@ fun PlantScreen(context: Context, plantId: String, navController: NavController,
                             Button(
                                 onClick = {
                                     coroutineScope.launch {
-                                        plantViewModel.updateWateringTime(context, plantId)
+                                        plantViewModel.updateWateringTime(context, plant, daysBetweenWatering)
                                         showWaterDialog = false
                                         refreshTrigger++
                                     }},

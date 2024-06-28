@@ -97,7 +97,7 @@ class MainActivity : ComponentActivity() {
     }
     override fun onBackPressed() {
         if (isBackPressedOnce) {
-            moveTaskToBack(true)
+            finish()
         } else {
             isBackPressedOnce = true
             Toast.makeText(this, "Press back again to exit", Toast.LENGTH_SHORT).show()

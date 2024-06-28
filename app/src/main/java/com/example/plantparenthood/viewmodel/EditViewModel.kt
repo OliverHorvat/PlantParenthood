@@ -3,6 +3,7 @@ import android.net.Uri
 import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.plantparenthood.Plant
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
@@ -15,6 +16,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import java.util.UUID
+import com.example.plantparenthood.utils.NotificationUtils
+import com.example.plantparenthood.utils.NotificationUtils.cancelNotification
+import kotlinx.coroutines.launch
 
 class EditViewModel : ViewModel() {
     private val db = FirebaseFirestore.getInstance()
@@ -33,13 +37,13 @@ class EditViewModel : ViewModel() {
                 val name = documentSnapshot.getString("name") ?: ""
                 val type = documentSnapshot.getString("type") ?: ""
                 val wateringTime = documentSnapshot.getTimestamp("wateringTime") ?: Timestamp(0, 0)
-
                 return Plant(
                     image = image,
                     name = name,
                     type = type,
                     wateringTime = wateringTime,
-                    documentId = documentSnapshot.id
+                    documentId = documentSnapshot.id,
+                    ownerId = currentUser
                 )
             }
         } catch (e: Exception) {
@@ -49,12 +53,16 @@ class EditViewModel : ViewModel() {
         return null
     }
     fun addPlant(context: Context, plant: Plant) {
+        val currentUser = FirebaseAuth.getInstance().currentUser!!.uid
         collectionRef.add(plant)
             .addOnSuccessListener { documentReference ->
-                val updatedPlant = plant.copy(documentId = documentReference.id)
+                val updatedPlant = plant.copy(documentId = documentReference.id, ownerId = currentUser)
                 collectionRef.document(documentReference.id).set(updatedPlant)
                     .addOnSuccessListener {
-                        Toast.makeText(context, "${plant.name} has been added to your garden", Toast.LENGTH_SHORT).show()
+                        viewModelScope.launch {
+                            Toast.makeText(context, "${plant.name} has been added to your garden", Toast.LENGTH_SHORT).show()
+                            NotificationUtils.scheduleNotification(context, updatedPlant, fetchDaysBetweenWatering(context, plant.type))
+                        }
                     }
                     .addOnFailureListener {
                         Toast.makeText(context, "${plant.name} is not properly added to garden", Toast.LENGTH_SHORT).show()
@@ -66,10 +74,13 @@ class EditViewModel : ViewModel() {
     }
 
     fun editPlant(context: Context, documentId: String, plant: Plant) {
-        val updatedPlant = plant.copy(documentId = documentId)
-        collectionRef.document(documentId).set(updatedPlant)
+        collectionRef.document(documentId).set(plant)
             .addOnSuccessListener {
-                Toast.makeText(context, "${plant.name} has been updated in your garden", Toast.LENGTH_SHORT).show()
+                viewModelScope.launch {
+                    Toast.makeText(context, "${plant.name} has been updated in your garden", Toast.LENGTH_SHORT).show()
+                    cancelNotification(context, plant.documentId)
+                    NotificationUtils.scheduleNotification(context, plant, fetchDaysBetweenWatering(context, plant.type))
+                }
             }
             .addOnFailureListener {
                 Toast.makeText(context, "Failed to update plant in your garden", Toast.LENGTH_SHORT).show()
@@ -111,5 +122,21 @@ class EditViewModel : ViewModel() {
         } catch (e: Exception) {
             emptyList()
         }
+    }
+
+    suspend fun fetchDaysBetweenWatering(context: Context, plantType: String): Int {
+        var daysBetweenWatering = 0
+        val daysBetweenWateringDocRef = db.collection("plantType").document(plantType)
+
+        try {
+            val document = daysBetweenWateringDocRef.get().await()
+            if (document.exists()) {
+                daysBetweenWatering = document.getLong("daysBetweenWatering")?.toInt() ?: 0
+            }
+        } catch (e: Exception) {
+            daysBetweenWatering = 0
+            Toast.makeText(context, "Something went wrong, please check your internet connection", Toast.LENGTH_SHORT).show()
+        }
+        return daysBetweenWatering
     }
 }

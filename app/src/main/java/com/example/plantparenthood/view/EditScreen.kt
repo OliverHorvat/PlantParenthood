@@ -69,6 +69,7 @@ fun EditScreen(context: Context, plantId: String, navController: NavController, 
     var day by remember { mutableStateOf("") }
     var hour by remember { mutableStateOf("") }
     var minute by remember { mutableStateOf("") }
+    var ownerId by remember { mutableStateOf("") }
     var showDialog by remember { mutableStateOf(false) }
     var plantTypes by remember { mutableStateOf<List<String>>(emptyList()) }
     var imageCaptured by remember { mutableStateOf(false) }
@@ -83,6 +84,7 @@ fun EditScreen(context: Context, plantId: String, navController: NavController, 
             plant = editViewModel.getPlantById(context, plantId) ?: Plant()
             name.value = plant.name
             type = plant.type
+            ownerId = plant.ownerId
             val calendar = Calendar.getInstance()
             calendar.time = plant.wateringTime.toDate()
             year = calendar.get(Calendar.YEAR).toString()
@@ -360,7 +362,8 @@ fun EditScreen(context: Context, plantId: String, navController: NavController, 
                             val newPlant = Plant(
                                 name = name.value,
                                 wateringTime = wateringTime,
-                                type = type
+                                type = type,
+                                ownerId = ownerId
                             )
                             if (plant.documentId != "") {
 
