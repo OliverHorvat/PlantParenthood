@@ -28,6 +28,6 @@ class DetailsViewModel : ViewModel() {
                 Toast.makeText(context, "Something went wrong, please check your internet connection", Toast.LENGTH_SHORT).show()
             }
         }
-        return null;
+        return null
     }
 }
