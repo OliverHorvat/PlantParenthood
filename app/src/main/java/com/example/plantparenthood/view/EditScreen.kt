@@ -20,7 +20,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.navigation.NavController
-import com.example.plantparenthood.Flower
+import com.example.plantparenthood.Plant
 import com.example.plantparenthood.R
 import com.google.firebase.Timestamp
 import java.util.Calendar
@@ -51,7 +51,7 @@ import com.example.plantparenthood.ui.theme.buttonLight
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EditScreen(context: Context, flowerId: String, navController: NavController, editViewModel: EditViewModel) {
+fun EditScreen(context: Context, plantId: String, navController: NavController, editViewModel: EditViewModel) {
     var backgroundColor = backgroundLight
     var buttonColor = buttonLight
     var textColor = Color.Black
@@ -73,24 +73,24 @@ fun EditScreen(context: Context, flowerId: String, navController: NavController,
     var plantTypes by remember { mutableStateOf<List<String>>(emptyList()) }
     var imageCaptured by remember { mutableStateOf(false) }
     var capturedImageUri by remember { mutableStateOf<Uri>(Uri.EMPTY) }
-    var flower by remember { mutableStateOf(Flower()) }
+    var plant by remember { mutableStateOf(Plant()) }
     var isLoading by remember { mutableStateOf(true) }
     val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.load))
 
     LaunchedEffect(Unit) {
         plantTypes = editViewModel.getPlantTypes()
-        if (flowerId != "") {
-            flower = editViewModel.getFlowerById(context, flowerId) ?: Flower()
-            name.value = flower.name
-            type = flower.type
+        if (plantId != "") {
+            plant = editViewModel.getPlantById(context, plantId) ?: Plant()
+            name.value = plant.name
+            type = plant.type
             val calendar = Calendar.getInstance()
-            calendar.time = flower.floweringTime.toDate()
+            calendar.time = plant.wateringTime.toDate()
             year = calendar.get(Calendar.YEAR).toString()
             month = (calendar.get(Calendar.MONTH) + 1).toString()
             day = calendar.get(Calendar.DAY_OF_MONTH).toString()
             hour = calendar.get(Calendar.HOUR_OF_DAY).toString()
             minute = calendar.get(Calendar.MINUTE).toString()
-            if (flower.image != "") {
+            if (plant.image != "") {
                 imageCaptured = true
             }
         }
@@ -98,7 +98,7 @@ fun EditScreen(context: Context, flowerId: String, navController: NavController,
     }
 
     val file = File.createTempFile(
-        "flower",
+        "plant",
         ".jpg",
         context.externalCacheDir
     )
@@ -154,7 +154,7 @@ fun EditScreen(context: Context, flowerId: String, navController: NavController,
 
                 if (imageCaptured) {
                     val painter = if (capturedImageUri == Uri.EMPTY) {
-                        rememberImagePainter(data = flower.image)
+                        rememberImagePainter(data = plant.image)
                     } else {
                         rememberImagePainter(capturedImageUri)
                     }
@@ -356,27 +356,29 @@ fun EditScreen(context: Context, flowerId: String, navController: NavController,
                                 minute.toInt(),
                                 0
                             )
-                            val floweringTime = Timestamp(calendar.time)
-                            val newFlower = Flower(
+                            val wateringTime = Timestamp(calendar.time)
+                            val newPlant = Plant(
                                 name = name.value,
-                                floweringTime = floweringTime,
+                                wateringTime = wateringTime,
                                 type = type
                             )
-                            if (flower.documentId != "") {
+                            if (plant.documentId != "") {
 
                                 if (capturedImageUri == Uri.EMPTY) {
-                                    newFlower.image = flower.image
-                                    editViewModel.editFlower(context, flower.documentId, newFlower)
+                                    newPlant.image = plant.image
+                                    editViewModel.editPlant(context, plant.documentId, newPlant)
+                                    navController.navigate("plant_screen")
                                 } else {
                                     editViewModel.uploadImageToFirebase(capturedImageUri,
                                         onSuccess = { downloadUrl ->
-                                            newFlower.image = downloadUrl
-                                            editViewModel.editFlower(
+                                            newPlant.image = downloadUrl
+                                            editViewModel.editPlant(
                                                 context,
-                                                flower.documentId,
-                                                newFlower
+                                                plant.documentId,
+                                                newPlant
                                             )
-                                            editViewModel.deleteImageFromFirebase(flower.image)
+                                            editViewModel.deleteImageFromFirebase(plant.image)
+                                            navController.navigate("plant_screen")
                                         },
                                         onFailure = {
                                             Toast.makeText(
@@ -390,17 +392,14 @@ fun EditScreen(context: Context, flowerId: String, navController: NavController,
                             } else {
                                 editViewModel.uploadImageToFirebase(capturedImageUri,
                                     onSuccess = { downloadUrl ->
-                                        newFlower.image = downloadUrl
-                                        editViewModel.addFlower(context, newFlower)
+                                        newPlant.image = downloadUrl
+                                        editViewModel.addPlant(context, newPlant)
                                     },
                                     onFailure = { filler ->
-                                        newFlower.image = filler
-                                        editViewModel.addFlower(context, newFlower)
+                                        newPlant.image = filler
+                                        editViewModel.addPlant(context, newPlant)
                                     }
                                 )
-                            }
-                            if(flowerId != ""){
-                                navController.navigate("plant_screen")
                             }
                         } else {
                             Toast.makeText(context, "Please input valid date", Toast.LENGTH_SHORT)

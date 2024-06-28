@@ -19,7 +19,7 @@ import coil.compose.rememberImagePainter
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.rememberLottieComposition
-import com.example.plantparenthood.FlowerTypeModel
+import com.example.plantparenthood.PlantType
 import com.example.plantparenthood.R
 import com.example.plantparenthood.ui.theme.backgroundDark
 import com.example.plantparenthood.ui.theme.backgroundLight
@@ -38,12 +38,12 @@ fun DetailsScreen(context:Context, type: String, navController: NavController, d
         textColor = Color.White
     }
 
-    var typeDetails by remember { mutableStateOf(FlowerTypeModel()) }
+    var typeDetails by remember { mutableStateOf(PlantType()) }
     var isLoading by remember { mutableStateOf(true) }
     val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.load))
 
     LaunchedEffect(Unit) {
-        typeDetails = detailsViewModel.getTypeDetails(context, type) ?: FlowerTypeModel()
+        typeDetails = detailsViewModel.getTypeDetails(context, type) ?: PlantType()
         isLoading = false
     }
     Box(

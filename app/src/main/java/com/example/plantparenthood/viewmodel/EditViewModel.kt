@@ -3,7 +3,7 @@ import android.net.Uri
 import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.ViewModel
-import com.example.plantparenthood.Flower
+import com.example.plantparenthood.Plant
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -19,26 +19,26 @@ import java.util.UUID
 class EditViewModel : ViewModel() {
     private val db = FirebaseFirestore.getInstance()
     private val currentUser = FirebaseAuth.getInstance().currentUser!!.uid
-    private val collectionRef = db.collection("users").document(currentUser).collection("flowers")
+    private val collectionRef = db.collection("users").document(currentUser).collection("plants")
     private val storage = FirebaseStorage.getInstance()
     private val storageRef: StorageReference = storage.reference
     private val imageRef = storageRef.child("images/${UUID.randomUUID()}.jpg")
-    suspend fun getFlowerById(context:Context, documentId: String): Flower? {
+    suspend fun getPlantById(context:Context, documentId: String): Plant? {
         try {
             val currentUser = FirebaseAuth.getInstance().currentUser!!.uid
-            val documentSnapshot = db.collection("users").document(currentUser).collection("flowers").document(documentId).get().await()
+            val documentSnapshot = db.collection("users").document(currentUser).collection("plants").document(documentId).get().await()
 
             if (documentSnapshot.exists()) {
                 val image = documentSnapshot.getString("image") ?: ""
                 val name = documentSnapshot.getString("name") ?: ""
                 val type = documentSnapshot.getString("type") ?: ""
-                val floweringTime = documentSnapshot.getTimestamp("floweringTime") ?: Timestamp(0, 0)
+                val wateringTime = documentSnapshot.getTimestamp("wateringTime") ?: Timestamp(0, 0)
 
-                return Flower(
+                return Plant(
                     image = image,
                     name = name,
                     type = type,
-                    floweringTime = floweringTime,
+                    wateringTime = wateringTime,
                     documentId = documentSnapshot.id
                 )
             }
@@ -48,31 +48,31 @@ class EditViewModel : ViewModel() {
         }
         return null
     }
-    fun addFlower(context: Context, flower: Flower) {
-        collectionRef.add(flower)
+    fun addPlant(context: Context, plant: Plant) {
+        collectionRef.add(plant)
             .addOnSuccessListener { documentReference ->
-                val updatedFlower = flower.copy(documentId = documentReference.id)
-                collectionRef.document(documentReference.id).set(updatedFlower)
+                val updatedPlant = plant.copy(documentId = documentReference.id)
+                collectionRef.document(documentReference.id).set(updatedPlant)
                     .addOnSuccessListener {
-                        Toast.makeText(context, "${flower.name} has been added to your garden", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "${plant.name} has been added to your garden", Toast.LENGTH_SHORT).show()
                     }
                     .addOnFailureListener {
-                        Toast.makeText(context, "${flower.name} is not properly added to garden", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "${plant.name} is not properly added to garden", Toast.LENGTH_SHORT).show()
                     }
             }
             .addOnFailureListener {
-                Toast.makeText(context, "Failed to add flower to your garden", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "Failed to add plant to your garden", Toast.LENGTH_SHORT).show()
             }
     }
 
-    fun editFlower(context: Context, documentId: String, flower: Flower) {
-        val updatedFlower = flower.copy(documentId = documentId)
-        collectionRef.document(documentId).set(updatedFlower)
+    fun editPlant(context: Context, documentId: String, plant: Plant) {
+        val updatedPlant = plant.copy(documentId = documentId)
+        collectionRef.document(documentId).set(updatedPlant)
             .addOnSuccessListener {
-                Toast.makeText(context, "${flower.name} has been updated in your garden", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "${plant.name} has been updated in your garden", Toast.LENGTH_SHORT).show()
             }
             .addOnFailureListener {
-                Toast.makeText(context, "Failed to update flower in your garden", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "Failed to update plant in your garden", Toast.LENGTH_SHORT).show()
             }
     }
 

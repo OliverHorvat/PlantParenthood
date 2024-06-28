@@ -1,6 +1,6 @@
 package com.example.plantparenthood
 
-data class FlowerTypeModel(
+data class PlantType(
     val image: String = "",
     val description: String = "",
     val daysBetweenWatering: Int = 0

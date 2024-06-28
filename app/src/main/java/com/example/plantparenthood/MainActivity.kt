@@ -83,13 +83,13 @@ class MainActivity : ComponentActivity() {
                     }
                     composable("plant_screen") {
                         plantViewModel = viewModel()
-                        PlantScreen(context = this@MainActivity, flowerId = gardenViewModel.screenFlowerId, navController = navController, plantViewModel = plantViewModel)
+                        PlantScreen(context = this@MainActivity, plantId = gardenViewModel.screenPlantId, navController = navController, plantViewModel = plantViewModel)
                     }
                     composable("details_screen") {
                         DetailsScreen(context = this@MainActivity, type = plantViewModel.type, navController = navController, detailsViewModel = DetailsViewModel())
                     }
                     composable("edit_screen") {
-                        EditScreen(context = this@MainActivity, flowerId = gardenViewModel.screenFlowerId, navController = navController, editViewModel = EditViewModel())
+                        EditScreen(context = this@MainActivity, plantId = gardenViewModel.screenPlantId, navController = navController, editViewModel = EditViewModel())
                     }
                 }
             }

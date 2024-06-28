@@ -27,7 +27,7 @@ import coil.compose.rememberImagePainter
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.rememberLottieComposition
-import com.example.plantparenthood.Flower
+import com.example.plantparenthood.Plant
 import com.example.plantparenthood.R
 import com.example.plantparenthood.ui.theme.backgroundDark
 import com.example.plantparenthood.ui.theme.backgroundLight
@@ -44,14 +44,14 @@ fun GardenScreen(context: Context, navController: NavController, gardenViewModel
         buttonColor = buttonDark
     }
 
-    val itemsState = remember { mutableStateOf<List<Flower>>(emptyList()) }
+    val itemsState = remember { mutableStateOf<List<Plant>>(emptyList()) }
     var isLoading by remember { mutableStateOf(true) }
     val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.load))
 
     LaunchedEffect(Unit) {
-        val flowers = gardenViewModel.getFlowers(context)
-        val items = flowers.map { flower ->
-            Flower(name = flower.name, image = flower.image, type = flower.type, documentId = flower.documentId)
+        val plants = gardenViewModel.getPlants(context)
+        val items = plants.map { plant ->
+            Plant(name = plant.name, image = plant.image, type = plant.type, documentId = plant.documentId)
         }
         itemsState.value = items
         isLoading = false
@@ -84,21 +84,21 @@ fun GardenScreen(context: Context, navController: NavController, gardenViewModel
 }
 
 @Composable
-fun RecyclerView(items: List<Flower>, navController: NavController, gardenViewModel: GardenViewModel, buttonColor: Color) {
+fun RecyclerView(items: List<Plant>, navController: NavController, gardenViewModel: GardenViewModel, buttonColor: Color) {
     LazyColumn {
         items(items) { item ->
-            ListFlowerView(item = item, navController, gardenViewModel, buttonColor)
+            ListPlantView(item = item, navController, gardenViewModel, buttonColor)
         }
     }
 }
 
 @Composable
-fun ListFlowerView(item: Flower, navController: NavController, gardenViewModel: GardenViewModel, buttonColor: Color) {
+fun ListPlantView(item: Plant, navController: NavController, gardenViewModel: GardenViewModel, buttonColor: Color) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 12.dp, vertical = 8.dp)
-            .clickable { gardenViewModel.goToFlower(item, navController) }
+            .clickable { gardenViewModel.goToPlant(item, navController) }
             .background(buttonColor)
     ) {
         Row(
@@ -115,7 +115,7 @@ fun ListFlowerView(item: Flower, navController: NavController, gardenViewModel: 
 
             Image(
                 painter = painter,
-                contentDescription = "Flower",
+                contentDescription = "Plant",
                 modifier = Modifier.size(72.dp)
             )
 

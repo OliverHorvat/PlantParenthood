@@ -22,7 +22,7 @@ import coil.compose.rememberImagePainter
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.rememberLottieComposition
-import com.example.plantparenthood.Flower
+import com.example.plantparenthood.Plant
 import com.example.plantparenthood.R
 import com.example.plantparenthood.ui.theme.backgroundDark
 import com.example.plantparenthood.ui.theme.backgroundLight
@@ -34,7 +34,7 @@ import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
 
 @Composable
-fun PlantScreen(context: Context, flowerId: String, navController: NavController, plantViewModel: PlantViewModel) {
+fun PlantScreen(context: Context, plantId: String, navController: NavController, plantViewModel: PlantViewModel) {
     var backgroundColor = backgroundLight
     var buttonColor = buttonLight
     var textColor = Color.Black
@@ -56,19 +56,19 @@ fun PlantScreen(context: Context, flowerId: String, navController: NavController
     val daysText = remember { mutableStateOf("") }
     val minutesText = remember { mutableStateOf("") }
     val hoursText = remember { mutableStateOf("") }
-    var flower by remember { mutableStateOf(Flower()) }
+    var plant by remember { mutableStateOf(Plant()) }
     var showDeleteDialog by remember { mutableStateOf(false) }
     var showWaterDialog by remember { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
     val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.load))
 
     LaunchedEffect(refreshTrigger) {
-        flower = plantViewModel.getFlowerById(context, flowerId) ?: Flower()
-        daysBetweenWatering = plantViewModel.fetchDaysBetweenWatering(context, flower.type)
+        plant = plantViewModel.getPlantById(context, plantId) ?: Plant()
+        daysBetweenWatering = plantViewModel.fetchDaysBetweenWatering(context, plant.type)
         isLoading = false
         while (true) {
             val (isOverdue, overdueMinutes) = plantViewModel.calculateWateringTime(
-                flower.floweringTime,
+                plant.wateringTime,
                 daysBetweenWatering
             )
             overdue.value = isOverdue
@@ -93,7 +93,7 @@ fun PlantScreen(context: Context, flowerId: String, navController: NavController
             } else {
                 "${minutes.value} minutes"
             }
-            plantViewModel.type = flower.type
+            plantViewModel.type = plant.type
             delay(60000)
         }
     }
@@ -138,14 +138,14 @@ fun PlantScreen(context: Context, flowerId: String, navController: NavController
                 Spacer(modifier = Modifier.height(12.dp))
 
                 Text(
-                    text = "${flower.type}:",
+                    text = "${plant.type}:",
                     textAlign = TextAlign.Center,
                     color = textColor,
                     fontSize = 32.sp,
                     modifier = Modifier.align(Alignment.CenterHorizontally)
                 )
                 Text(
-                    text = flower.name,
+                    text = plant.name,
                     fontWeight = FontWeight.Bold,
                     textAlign = TextAlign.Center,
                     maxLines = 1,
@@ -156,8 +156,8 @@ fun PlantScreen(context: Context, flowerId: String, navController: NavController
                 )
                 Spacer(modifier = Modifier.height(12.dp))
 
-                val painter = if (flower.image != "") {
-                    rememberImagePainter(data = flower.image)
+                val painter = if (plant.image != "") {
+                    rememberImagePainter(data = plant.image)
                 } else {
                     painterResource(id = R.drawable.plant)
                 }
@@ -236,7 +236,7 @@ fun PlantScreen(context: Context, flowerId: String, navController: NavController
                     onDismissRequest = { showDeleteDialog = false },
                     containerColor = backgroundColor,
                     title = { Text(
-                        text = "Are you sure that you want to delete\n''${flower.name}''?",
+                        text = "Are you sure that you want to delete\n''${plant.name}''?",
                         maxLines = 4,
                         overflow = TextOverflow.Ellipsis,
                         modifier = Modifier.padding(8.dp).fillMaxWidth(),
@@ -253,7 +253,7 @@ fun PlantScreen(context: Context, flowerId: String, navController: NavController
                             Button(
                                 onClick = {
                                     coroutineScope.launch {
-                                        plantViewModel.deleteFlowerById(context, flowerId, flower.image)
+                                        plantViewModel.deletePlantById(context, plantId, plant.image)
                                         showDeleteDialog = false
                                         navController.navigate("garden_screen")
                                     } },
@@ -277,7 +277,7 @@ fun PlantScreen(context: Context, flowerId: String, navController: NavController
                     onDismissRequest = { showWaterDialog = false },
                     containerColor = backgroundColor,
                     title = { Text(
-                        text = "Confirm watering\n''${flower.name}''",
+                        text = "Confirm watering\n''${plant.name}''",
                         maxLines = 3,
                         overflow = TextOverflow.Ellipsis,
                         modifier = Modifier.padding(8.dp).fillMaxWidth(),
@@ -294,7 +294,7 @@ fun PlantScreen(context: Context, flowerId: String, navController: NavController
                             Button(
                                 onClick = {
                                     coroutineScope.launch {
-                                        plantViewModel.updateWateringTime(context, flowerId)
+                                        plantViewModel.updateWateringTime(context, plantId)
                                         showWaterDialog = false
                                         refreshTrigger++
                                     }},
