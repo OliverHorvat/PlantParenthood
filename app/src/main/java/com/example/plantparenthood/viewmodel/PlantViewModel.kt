@@ -68,6 +68,7 @@ class PlantViewModel : ViewModel() {
 
         if (documentSnapshot.exists()) {
             documentRef.delete().await()
+            NotificationUtils.cancelNotification(context, documentId)
             if (imageUrl != "") {
                 val startIndex = imageUrl.indexOf("images%2F") + "images%2F".length
                 val endIndex = imageUrl.indexOf(".jpg", startIndex) + ".jpg".length
