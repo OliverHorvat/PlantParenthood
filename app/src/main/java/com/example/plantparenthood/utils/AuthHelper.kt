@@ -50,7 +50,7 @@ object AuthHelper {
         }
     }
 
-    suspend fun signInSynchronously(email: String, password: String): AuthResult? {
+    suspend fun signIn(email: String, password: String): AuthResult? {
         val auth: FirebaseAuth = FirebaseAuth.getInstance()
         return try {
             auth.signInWithEmailAndPassword(email, password).await()

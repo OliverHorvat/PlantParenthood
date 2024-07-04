@@ -379,7 +379,9 @@ fun EditScreen(context: Context, plantId: String, navController: NavController, 
                                         onSuccess = { downloadUrl ->
                                             newPlant.image = downloadUrl
                                             editViewModel.editPlant(context, newPlant)
-                                            editViewModel.deleteImageFromFirebase(plant.image)
+                                            if (plant.image != "") {
+                                                editViewModel.deleteImageFromFirebase(plant.image)
+                                            }
                                             navController.navigate("plant_screen")
                                         },
                                         onFailure = {

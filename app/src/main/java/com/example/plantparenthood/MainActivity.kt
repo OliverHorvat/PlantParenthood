@@ -50,7 +50,7 @@ class MainActivity : ComponentActivity() {
                     val isRememberMeChecked = AuthHelper.isRememberMeChecked(this@MainActivity)
 
                     if (isRememberMeChecked && savedEmail.isNotEmpty() && savedPassword.isNotEmpty()) {
-                        AuthHelper.signInSynchronously(savedEmail, savedPassword)
+                        AuthHelper.signIn(savedEmail, savedPassword)
                         startDestination = "main_screen"
                     } else {
                         startDestination = "welcome_screen"
